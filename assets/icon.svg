@@ -1,0 +1,97 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 背景径向渐变：深空黑到冷蓝黑 -->
+    <radialGradient id="bg" cx="50%" cy="38%" r="70%">
+      <stop offset="0%" stop-color="#0a2540"/>
+      <stop offset="55%" stop-color="#050f1f"/>
+      <stop offset="100%" stop-color="#010306"/>
+    </radialGradient>
+
+    <!-- 主品牌渐变：冷白到冰蓝到电蓝 -->
+    <linearGradient id="brand" x1="280" y1="220" x2="744" y2="804" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="45%" stop-color="#9fd9ff"/>
+      <stop offset="100%" stop-color="#0091ff"/>
+    </linearGradient>
+
+    <!-- 中心发光球 -->
+    <radialGradient id="orb" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#9fd9ff"/>
+      <stop offset="100%" stop-color="#0091ff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- 顶部北极星光晕 -->
+    <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="40%" stop-color="#9fd9ff" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0091ff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- 内阴影（暗角） -->
+    <radialGradient id="vignette" cx="50%" cy="50%" r="75%">
+      <stop offset="60%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.55"/>
+    </radialGradient>
+
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- 圆角方形背景（squircle 近似：大圆角矩形） -->
+  <rect x="0" y="0" width="1024" height="1024" rx="228" ry="228" fill="url(#bg)"/>
+
+  <!-- 轨道光环（Q 的弧形，从左下绕到右上，不闭合） -->
+  <path
+    d="M 232 620 A 280 280 0 1 1 792 620"
+    stroke="url(#brand)"
+    stroke-width="22"
+    stroke-linecap="round"
+    fill="none"
+    opacity="0.85"
+    filter="url(#softGlow)"
+  />
+
+  <!-- 字母 T（同时是山脉剪影）：竖线 + 顶横 -->
+  <g filter="url(#softGlow)">
+    <!-- 顶横：T 的上沿，两端微斜像山脊 -->
+    <path
+      d="M 312 372 L 712 372"
+      stroke="url(#brand)"
+      stroke-width="44"
+      stroke-linecap="round"
+      fill="none"
+    />
+    <!-- 竖线：T 的竖画，从顶横向下 -->
+    <path
+      d="M 512 372 L 512 720"
+      stroke="url(#brand)"
+      stroke-width="44"
+      stroke-linecap="round"
+      fill="none"
+    />
+  </g>
+
+  <!-- 中心交叉点的发光球（T 与轨道交汇，像太阳/月亮） -->
+  <circle cx="512" cy="512" r="120" fill="url(#orb)" opacity="0.95"/>
+  <circle cx="512" cy="512" r="28" fill="#ffffff"/>
+
+  <!-- 顶部北极星（在 T 顶横正上方，代表 Tengri 苍天） -->
+  <circle cx="512" cy="252" r="60" fill="url(#starGlow)"/>
+  <circle cx="512" cy="252" r="14" fill="#ffffff"/>
+
+  <!-- 左下角星点 -->
+  <circle cx="256" cy="748" r="8" fill="#9fd9ff" opacity="0.85"/>
+  <!-- 右上角星点 -->
+  <circle cx="792" cy="312" r="6" fill="#9fd9ff" opacity="0.7"/>
+  <!-- 右下角小星 -->
+  <circle cx="744" cy="724" r="5" fill="#9fd9ff" opacity="0.6"/>
+
+  <!-- 暗角压暗四周 -->
+  <rect x="0" y="0" width="1024" height="1024" rx="228" ry="228" fill="url(#vignette)"/>
+</svg>

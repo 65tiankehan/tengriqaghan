@@ -3,171 +3,475 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tengri Qaghan · 流媒体播放器</title>
-  <meta name="description" content="Tengri Qaghan —— 跨平台流媒体播放器，支持 TMDB、Jellyfin/Emby、IPTV 与本地文件。" />
+  <title>Tengri Qaghan · 私人流媒体播放器</title>
+  <meta name="description" content="Tengri Qaghan —— 跨平台私人流媒体播放器，支持 Jellyfin/Plex/Emby、IPTV 直播、WebDAV/NAS、本地文件与自定义源，配合 TMDB 元数据、弹幕、HLS 播放器与 Gist 云同步。" />
+  <meta name="theme-color" content="#010306" />
+  <meta property="og:title" content="Tengri Qaghan · 私人流媒体播放器" />
+  <meta property="og:description" content="Jellyfin/Plex/Emby · IPTV · WebDAV · 本地文件 · 自定义源，一个播放器统一你的所有片源。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://65tiankehan.github.io/tengriqaghan/" />
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+  <link rel="apple-touch-icon" href="assets/icon-256.png" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --bg: #0a0a0c;
-      --panel: rgba(28, 28, 30, 0.72);
-      --label: rgba(255, 255, 255, 0.92);
-      --label-2: rgba(255, 255, 255, 0.62);
-      --label-3: rgba(255, 255, 255, 0.38);
-      --accent: #0091ff;
-      --border: rgba(255, 255, 255, 0.1);
+      --bg: #010306;
+      --bg-2: #050b14;
+      --panel: rgba(14, 22, 36, 0.62);
+      --panel-solid: #0b1422;
+      --label: rgba(255, 255, 255, 0.94);
+      --label-2: rgba(255, 255, 255, 0.68);
+      --label-3: rgba(255, 255, 255, 0.42);
+      --accent: #5cb8ff;
+      --accent-e: #0091ff;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(92, 184, 255, 0.32);
+      --ok: #30d158;
+      --radius: 18px;
     }
     html, body { height: 100%; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-        "Microsoft YaHei", system-ui, sans-serif;
+        "Microsoft YaHei", "Helvetica Neue", system-ui, sans-serif;
       color: var(--label);
       background:
-        radial-gradient(1200px 600px at 50% -10%, rgba(0, 145, 255, 0.18), transparent 60%),
-        radial-gradient(800px 500px at 85% 110%, rgba(94, 92, 230, 0.16), transparent 60%),
+        radial-gradient(1100px 620px at 50% -12%, rgba(0, 145, 255, 0.22), transparent 60%),
+        radial-gradient(900px 560px at 88% 108%, rgba(30, 80, 160, 0.22), transparent 62%),
+        radial-gradient(700px 500px at 8% 80%, rgba(0, 70, 140, 0.14), transparent 60%),
         var(--bg);
       min-height: 100%;
-      display: grid;
-      place-items: center;
-      padding: 32px 20px;
       -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
     }
-    .wrap {
-      width: 100%;
-      max-width: 560px;
-      text-align: center;
-      animation: rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    /* 胶片噪点叠加 */
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      opacity: 0.5;
+      mix-blend-mode: overlay;
+      z-index: 1;
     }
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    /* ===== 顶部导航 ===== */
+    header.nav {
+      padding: 22px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .brand {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      font-size: 13px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--label-3);
+      gap: 12px;
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: -0.01em;
+    }
+    .brand img { width: 32px; height: 32px; border-radius: 8px; }
+    .brand .name { background: linear-gradient(90deg, #fff, #9fd9ff 70%, #5cb8ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .nav-links { display: flex; gap: 22px; align-items: center; }
+    .nav-links a { color: var(--label-2); text-decoration: none; font-size: 14px; transition: color .2s; }
+    .nav-links a:hover { color: #fff; }
+    @media (max-width: 640px) { .nav-links a:not(.btn) { display: none; } }
+
+    /* ===== Hero ===== */
+    section.hero {
+      padding: 72px 0 56px;
+      text-align: center;
+      animation: rise .7s cubic-bezier(.2,.8,.2,1) both;
+    }
+    @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    .hero-icon {
+      width: 108px; height: 108px;
+      margin: 0 auto 28px;
+      border-radius: 26px;
+      box-shadow: 0 30px 80px rgba(0, 145, 255, 0.35), 0 0 0 1px rgba(255,255,255,0.06);
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(48, 209, 88, 0.1);
+      border: 0.5px solid rgba(48, 209, 88, 0.32);
+      color: var(--ok);
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
       margin-bottom: 22px;
     }
-    .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 16px rgba(0, 145, 255, 0.7);
+    .badge .pulse {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--ok);
+      box-shadow: 0 0 10px var(--ok);
+      animation: pulse 1.6s ease-in-out infinite;
     }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
     h1 {
-      font-size: clamp(34px, 6vw, 52px);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin-bottom: 16px;
-      background: linear-gradient(180deg, #fff, rgba(255,255,255,0.7));
+      font-size: clamp(38px, 6.2vw, 64px);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+      margin-bottom: 20px;
+      background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.72) 100%);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     p.lead {
-      font-size: 16px;
-      line-height: 1.7;
+      font-size: clamp(15.5px, 2vw, 18px);
+      line-height: 1.75;
       color: var(--label-2);
-      max-width: 460px;
-      margin: 0 auto 30px;
+      max-width: 640px;
+      margin: 0 auto 36px;
     }
-    .card {
-      background: var(--panel);
-      backdrop-filter: blur(40px) saturate(1.8);
-      -webkit-backdrop-filter: blur(40px) saturate(1.8);
-      border: 0.5px solid var(--border);
-      border-radius: 22px;
-      padding: 22px;
-      box-shadow: 0 40px 100px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
-      display: grid;
+    .cta {
+      display: flex;
       gap: 14px;
-      text-align: left;
-    }
-    .row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 14px;
-    }
-    .row .k { color: var(--label-2); }
-    .row .v { color: var(--label); font-weight: 500; }
-    .pill {
-      font-size: 12px;
-      padding: 3px 10px;
-      border-radius: 999px;
-      background: rgba(48, 209, 88, 0.14);
-      color: #30d158;
-      border: 0.5px solid rgba(48, 209, 88, 0.3);
-    }
-    .links {
-      margin-top: 26px;
-      display: flex;
-      gap: 12px;
       justify-content: center;
       flex-wrap: wrap;
     }
     a.btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      min-height: 44px;
-      padding: 0 26px;
-      border-radius: 12px;
+      gap: 10px;
+      min-height: 50px;
+      padding: 0 28px;
+      border-radius: 14px;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
-      transition: transform 0.18s ease, background 0.2s ease;
+      transition: transform .18s ease, box-shadow .2s ease, background .2s ease;
+      cursor: pointer;
+      border: 0.5px solid transparent;
     }
-    a.btn.primary { background: rgba(255,255,255,0.95); color: #000; }
-    a.btn.primary:hover { background: #fff; transform: translateY(-1px); }
-    footer {
-      margin-top: 30px;
-      font-size: 12px;
+    a.btn.primary {
+      background: linear-gradient(180deg, #6ec6ff, #0091ff);
+      color: #fff;
+      box-shadow: 0 14px 40px rgba(0, 145, 255, 0.42), inset 0 1px 0 rgba(255,255,255,0.25);
+    }
+    a.btn.primary:hover { transform: translateY(-2px); box-shadow: 0 20px 50px rgba(0,145,255,0.55), inset 0 1px 0 rgba(255,255,255,0.3); }
+    a.btn.ghost {
+      background: rgba(255,255,255,0.04);
+      color: var(--label);
+      border-color: var(--border);
+      backdrop-filter: blur(12px);
+    }
+    a.btn.ghost:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+    .btn svg { width: 18px; height: 18px; }
+
+    .meta {
+      margin-top: 22px;
+      font-size: 13px;
       color: var(--label-3);
     }
-    footer a { color: var(--label-2); text-decoration: none; margin: 0 6px; }
+    .meta strong { color: var(--label-2); font-weight: 600; }
+
+    /* ===== 功能网格 ===== */
+    section.features { padding: 64px 0 40px; }
+    .section-title {
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--label-3);
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .feat {
+      background: var(--panel);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      backdrop-filter: blur(28px) saturate(1.6);
+      -webkit-backdrop-filter: blur(28px) saturate(1.6);
+      transition: transform .25s ease, border-color .25s ease, background .25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .feat::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(400px 120px at 0% 0%, rgba(0,145,255,0.18), transparent 60%);
+      opacity: 0;
+      transition: opacity .3s ease;
+      pointer-events: none;
+    }
+    .feat:hover { transform: translateY(-3px); border-color: var(--border-strong); }
+    .feat:hover::before { opacity: 1; }
+    .feat .ico {
+      width: 40px; height: 40px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, rgba(0,145,255,0.22), rgba(92,184,255,0.06));
+      border: 0.5px solid rgba(92,184,255,0.25);
+      display: grid; place-items: center;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+    .feat .ico svg { width: 20px; height: 20px; }
+    .feat h3 { font-size: 16px; font-weight: 650; margin-bottom: 8px; letter-spacing: -0.01em; }
+    .feat p { font-size: 13.5px; line-height: 1.65; color: var(--label-2); }
+
+    /* ===== 源支持 ===== */
+    section.sources { padding: 40px 0 64px; }
+    .src-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 28px;
+    }
+    .src-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--border);
+      font-size: 13.5px;
+      color: var(--label-2);
+      transition: all .2s;
+    }
+    .src-chip:hover { color: #fff; border-color: var(--border-strong); background: rgba(0,145,255,0.08); }
+    .src-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+    /* ===== 下载卡 ===== */
+    section.download { padding: 24px 0 80px; }
+    .dl-card {
+      background: linear-gradient(180deg, rgba(14,28,48,0.7), rgba(6,12,22,0.7));
+      border: 0.5px solid var(--border-strong);
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      box-shadow: 0 40px 120px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .dl-card::before {
+      content: "";
+      position: absolute;
+      top: -50%; left: 50%;
+      width: 600px; height: 600px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(0,145,255,0.18), transparent 60%);
+      pointer-events: none;
+    }
+    .dl-card > * { position: relative; z-index: 1; }
+    .dl-card h2 { font-size: clamp(22px, 3vw, 28px); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .dl-card p { color: var(--label-2); font-size: 14.5px; margin-bottom: 28px; }
+    .dl-platforms {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .platform {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--border);
+      font-size: 13.5px;
+      color: var(--label-3);
+    }
+    .platform.win { color: var(--label); border-color: var(--border-strong); background: rgba(0,145,255,0.08); }
+    .platform.soon { opacity: 0.55; }
+    .platform svg { width: 16px; height: 16px; }
+
+    /* ===== Footer ===== */
+    footer {
+      padding: 36px 0 48px;
+      border-top: 0.5px solid var(--border);
+      text-align: center;
+      font-size: 13px;
+      color: var(--label-3);
+    }
+    footer a { color: var(--label-2); text-decoration: none; margin: 0 8px; transition: color .2s; }
     footer a:hover { color: #fff; }
+    footer .row { margin-bottom: 8px; }
+
+    @media (max-width: 640px) {
+      section.hero { padding: 48px 0 40px; }
+      .hero-icon { width: 88px; height: 88px; border-radius: 22px; }
+      .dl-card { padding: 28px 20px; }
+      .feat { padding: 20px; }
+    }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <div class="brand"><span class="dot"></span> Tengri Qaghan</div>
-    <h1>跨平台流媒体播放器</h1>
-    <p class="lead">
-      支持 TMDB 元数据、Jellyfin / Emby 点播、IPTV 直播与本地文件播放，
-      配合 3D 歌单架、粒子视觉与玻璃质感，打造你的私人影院。
-    </p>
-
-    <div class="card">
-      <div class="row">
-        <span class="k">平台</span>
-        <span class="v">Windows · macOS · Linux</span>
+  <div class="container">
+    <!-- 顶部导航 -->
+    <header class="nav">
+      <div class="brand">
+        <img src="assets/icon.svg" alt="" />
+        <span class="name">Tengri Qaghan</span>
       </div>
-      <div class="row">
-        <span class="k">技术栈</span>
-        <span class="v">Electron · React · TypeScript</span>
-      </div>
-      <div class="row">
-        <span class="k">状态</span>
-        <span class="pill">即将上线</span>
-      </div>
-    </div>
+      <nav class="nav-links">
+        <a href="#features">功能</a>
+        <a href="#sources">片源</a>
+        <a href="https://github.com/65tiankehan/tengriqaghan-releases/releases" target="_blank" rel="noreferrer">下载</a>
+        <a class="btn ghost" href="https://github.com/65tiankehan/tengriqaghan-Code" target="_blank" rel="noreferrer" style="min-height:38px;padding:0 18px;font-size:13px;">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.21 1.79 1.21 1.04 1.78 2.73 1.27 3.4.97.1-.75.41-1.27.74-1.56-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.69 5.39-5.25 5.68.42.36.79 1.07.79 2.16v3.2c0 .31.21.68.8.56A11.52 11.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+          GitHub
+        </a>
+      </nav>
+    </header>
 
-    <div class="links">
-      <a class="btn primary" href="https://github.com/65tiankehan/tengriqaghan-releases/releases" target="_blank" rel="noreferrer">
-        下载最新版本
-      </a>
-    </div>
+    <!-- Hero -->
+    <section class="hero">
+      <img class="hero-icon" src="assets/icon.svg" alt="Tengri Qaghan" />
+      <div class="badge">
+        <span class="pulse"></span> v1.0.2 已发布 · Windows 可用
+      </div>
+      <h1>你的所有片源<br />一个播放器就够了</h1>
+      <p class="lead">
+        Tengri Qaghan 是一款跨平台私人流媒体播放器。统一接入 Jellyfin / Plex / Emby、
+        IPTV 直播、WebDAV / NAS、本地文件与自定义 JSON / M3U 源，配合 TMDB 元数据、
+        弹幕、外挂字幕、HLS 播放与 Gist 云同步，打造属于你的私人影院。
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/65tiankehan/tengriqaghan-releases/releases/latest" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          下载 Windows 版
+        </a>
+        <a class="btn ghost" href="https://github.com/65tiankehan/tengriqaghan-releases/releases" target="_blank" rel="noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          更新日志
+        </a>
+      </div>
+      <div class="meta">
+        安装包约 <strong>97 MB</strong> · Windows 10/11 · 已数字签名 ·
+        <strong>个人非商业使用</strong>
+      </div>
+    </section>
 
+    <!-- 功能 -->
+    <section class="features" id="features">
+      <div class="section-title">核心能力</div>
+      <div class="grid">
+        <div class="feat">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          </div>
+          <h3>HLS 播放器内核</h3>
+          <p>基于 hls.js，支持直播 / 点播、倍速、音轨与外挂字幕切换、进度续播、画中画与全屏沉浸模式。</p>
+        </div>
+        <div class="feat">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h3>多源聚合首页</h3>
+          <p>把 Jellyfin、Plex、Emby、IPTV、WebDAV 与本地文件汇聚到同一首页，按类型分类、跨源搜索与继续观看。</p>
+        </div>
+        <div class="feat">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3>弹幕与字幕</h3>
+          <p>Canvas 高性能弹幕引擎，支持 SRT / VTT / ASS 外挂字幕，本地字幕自动匹配与手动加载。</p>
+        </div>
+        <div class="feat">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+          </div>
+          <h3>Gist 云同步</h3>
+          <p>用 GitHub Gist 在多设备间同步收藏、历史、进度与设置，无需自建服务器，数据归你所有。</p>
+        </div>
+        <div class="feat">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          </div>
+          <h3>TMDB 元数据</h3>
+          <p>自动匹配 TMDB 海报、评分、演员、简介与背景图，WebDAV 裸文件名也能变成电影海报墙。</p>
+        </div>
+        <div class="feat">
+          <div class="ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>私密优先</h3>
+          <p>账号密码使用 Electron safeStorage 本地加密，不分析、不追踪、不上传播放数据，第三方源由你自行提供。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 支持片源 -->
+    <section class="sources" id="sources">
+      <div class="section-title">支持的片源</div>
+      <div class="src-row">
+        <span class="src-chip"><span class="dot"></span>Jellyfin</span>
+        <span class="src-chip"><span class="dot"></span>Plex</span>
+        <span class="src-chip"><span class="dot"></span>Emby</span>
+        <span class="src-chip"><span class="dot"></span>Xtream Codes</span>
+        <span class="src-chip"><span class="dot"></span>IPTV / M3U</span>
+        <span class="src-chip"><span class="dot"></span>WebDAV / NAS</span>
+        <span class="src-chip"><span class="dot"></span>本地文件</span>
+        <span class="src-chip"><span class="dot"></span>自定义 JSON 源</span>
+      </div>
+    </section>
+
+    <!-- 下载 -->
+    <section class="download">
+      <div class="dl-card">
+        <h2>立即开始你的私人影院</h2>
+        <p>免费下载，Windows 10 / 11 已就绪。macOS 与 Linux 版本将在后续更新中推出。</p>
+        <a class="btn primary" href="https://github.com/65tiankehan/tengriqaghan-releases/releases/latest" target="_blank" rel="noreferrer" style="margin-bottom:20px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          下载 v1.0.2 for Windows
+        </a>
+        <div class="dl-platforms">
+          <span class="platform win">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5L10 4.5v7H3v-6zM11 4.4l10-1.4v8.5h-10V4.4zM3 12.5h7v7L3 18.5v-6zm8 0h10v8.5l-10-1.4v-7.1z"/></svg>
+            Windows · 已发布
+          </span>
+          <span class="platform soon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+            macOS · 计划中
+          </span>
+          <span class="platform soon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.504 0c-.155 0-.315.008-.48.021v8.023h.008c.009 0 .011-.008.012-.01l.021-4.172a.315.315 0 0 1 .629 0l.016 3.315a6.599 6.599 0 1 1-.186-7.154z"/></svg>
+            Linux · 计划中
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
     <footer>
-      © <span id="y"></span> Tengri Qaghan ·
-      <a href="https://github.com/65tiankehan/tengriqaghan-releases/releases" target="_blank" rel="noreferrer">更新日志</a>
+      <div class="row">
+        <a href="https://github.com/65tiankehan/tengriqaghan-releases/releases" target="_blank" rel="noreferrer">下载</a> ·
+        <a href="https://github.com/65tiankehan/tengriqaghan-Code" target="_blank" rel="noreferrer">源码</a> ·
+        <a href="https://github.com/65tiankehan/tengriqaghan-Opendata" target="_blank" rel="noreferrer">公告数据</a> ·
+        <a href="https://github.com/65tiankehan" target="_blank" rel="noreferrer">作者 65tiankehan</a>
+      </div>
+      <div>© <span id="y"></span> 65tiankehan · Tengri Qaghan · 个人非商业使用</div>
     </footer>
-  </main>
-  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+  </div>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
