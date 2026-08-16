@@ -27,6 +27,23 @@
 
 第一次使用不知道从哪开始？看 👉 **[5 步新手指南](https://github.com/65tiankehan/tengriqaghan-Opendata/wiki)**
 
+<p align="center">
+  <img src="screenshots/home.jpg" alt="腾格里汗主界面" width="920" />
+</p>
+
+<details>
+<summary>📸 查看更多截图</summary>
+<p></p>
+<p align="center">
+  <img src="screenshots/movies.jpg" alt="电影库" width="45%" />
+  <img src="screenshots/detail.jpg" alt="详情页" width="45%" />
+</p>
+<p align="center">
+  <img src="screenshots/variety.jpg" alt="综艺库" width="45%" />
+  <img src="screenshots/settings.jpg" alt="设置" width="45%" />
+</p>
+</details>
+
 ## 能做什么
 
 - 🎬 **统一播放** — 电影、剧集、动漫、综艺、直播，一个界面全搞定

@@ -92,6 +92,22 @@
     .promise p { font-size: 12.5px; line-height: 1.6; color: var(--label-3); }
     @media (max-width: 640px) { .promises { grid-template-columns: 1fr; } }
 
+    /* 截图展示 */
+    section.showcase { padding: 32px 0 16px; }
+    .shot-wrap { position: relative; max-width: 960px; margin: 0 auto; border-radius: 16px; overflow: hidden; border: 0.5px solid var(--border); box-shadow: 0 40px 100px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04); background: var(--bg-2); }
+    .shot-wrap::after { content:""; position:absolute; inset:0; pointer-events:none; box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.04); border-radius: 16px; }
+    .shot-main { display: block; width: 100%; height: auto; transition: opacity .3s ease; }
+    .shot-main.fade { opacity: 0; }
+    .shot-caption { display: flex; align-items: center; gap: 10px; justify-content: center; margin-top: 18px; font-size: 14px; color: var(--label-2); }
+    .shot-caption .cap { min-width: 120px; text-align: center; }
+    .thumb-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+    .thumb { width: 112px; border-radius: 9px; border: 1.5px solid transparent; overflow: hidden; cursor: pointer; opacity: 0.6; transition: all .2s; background: var(--bg-2); }
+    .thumb img { display: block; width: 100%; height: auto; }
+    .thumb:hover { opacity: 1; }
+    .thumb.active { opacity: 1; border-color: var(--accent); box-shadow: 0 6px 20px rgba(0,145,255,0.35); }
+    .thumb-label { font-size: 11px; color: var(--label-3); text-align: center; margin-top: 6px; }
+    .thumb.active .thumb-label { color: var(--accent); }
+
     /* 通用区块 */
     section { padding: 56px 0; }
     .section-title { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--label-3); text-align: center; margin-bottom: 12px; }
@@ -235,6 +251,38 @@
           <div class="pk">🔒</div>
           <h4>数据只在你电脑</h4>
           <p>账号密码加密存在本机，不上传任何服务器。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 应用截图 -->
+    <section class="showcase">
+      <div class="shot-wrap">
+        <img class="shot-main" id="shotMain" src="screenshots/home.jpg" alt="腾格里汗主界面" loading="lazy" />
+      </div>
+      <div class="shot-caption">
+        <span id="shotCap">首页 · 继续观看与本周热门</span>
+      </div>
+      <div class="thumb-row" id="thumbRow">
+        <div class="thumb active" data-src="screenshots/home.jpg" data-cap="首页 · 继续观看与本周热门">
+          <img src="screenshots/home.jpg" alt="首页" loading="lazy" />
+          <div class="thumb-label">首页</div>
+        </div>
+        <div class="thumb" data-src="screenshots/movies.jpg" data-cap="电影库 · 类型、年份与地区筛选">
+          <img src="screenshots/movies.jpg" alt="电影库" loading="lazy" />
+          <div class="thumb-label">电影库</div>
+        </div>
+        <div class="thumb" data-src="screenshots/detail.jpg" data-cap="详情页 · 剧情、演员与一键播放">
+          <img src="screenshots/detail.jpg" alt="详情页" loading="lazy" />
+          <div class="thumb-label">详情页</div>
+        </div>
+        <div class="thumb" data-src="screenshots/variety.jpg" data-cap="综艺库 · 海报墙">
+          <img src="screenshots/variety.jpg" alt="综艺库" loading="lazy" />
+          <div class="thumb-label">综艺库</div>
+        </div>
+        <div class="thumb" data-src="screenshots/settings.jpg" data-cap="设置 · 主题、启动与下载选项">
+          <img src="screenshots/settings.jpg" alt="设置" loading="lazy" />
+          <div class="thumb-label">设置</div>
         </div>
       </div>
     </section>
@@ -449,6 +497,28 @@
 
   <script>
     document.getElementById('y').textContent = new Date().getFullYear();
+
+    // 截图切换
+    (function () {
+      var main = document.getElementById('shotMain');
+      var cap = document.getElementById('shotCap');
+      var row = document.getElementById('thumbRow');
+      var thumbs = row.querySelectorAll('.thumb');
+      thumbs.forEach(function (t) {
+        t.addEventListener('click', function () {
+          thumbs.forEach(function (x) { x.classList.remove('active'); });
+          t.classList.add('active');
+          main.classList.add('fade');
+          var src = t.getAttribute('data-src');
+          var text = t.getAttribute('data-cap');
+          setTimeout(function () {
+            main.src = src;
+            cap.textContent = text;
+            main.classList.remove('fade');
+          }, 150);
+        });
+      });
+    })();
   </script>
 </body>
 </html>
