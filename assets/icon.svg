@@ -1,97 +1,82 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    Tengri Desk 应用图标（v1.0.24 定稿）
+    设计语言：iOS 风 squircle + 青靛双色渐变 + 白色圆角播放键。
+    注意：所有渐变层直接用 squircle path 填充，不要用 clipPath 包 <rect>，
+    否则 resvg 在小尺寸（≤32px）下会在四角渲染出白色伪影。
+  -->
   <defs>
-    <!-- 背景径向渐变：深空黑到冷蓝黑 -->
-    <radialGradient id="bg" cx="50%" cy="38%" r="70%">
-      <stop offset="0%" stop-color="#0a2540"/>
-      <stop offset="55%" stop-color="#050f1f"/>
-      <stop offset="100%" stop-color="#010306"/>
-    </radialGradient>
+    <!--
+      squircle 超椭圆路径（连续曲率，iOS 风），三次贝塞尔近似。
+    -->
+    <path id="sq" d="
+      M 235 0
+      L 789 0
+      C 919 0 1024 105 1024 235
+      L 1024 789
+      C 1024 919 919 1024 789 1024
+      L 235 1024
+      C 105 1024 0 919 0 789
+      L 0 235
+      C 0 105 105 0 235 0 Z
+    "/>
 
-    <!-- 主品牌渐变：冷白到冰蓝到电蓝 -->
-    <linearGradient id="brand" x1="280" y1="220" x2="744" y2="804" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="45%" stop-color="#9fd9ff"/>
-      <stop offset="100%" stop-color="#0091ff"/>
+    <!-- 主底色：青蓝 → 靛蓝 -->
+    <linearGradient id="base" x1="0" y1="0" x2="0" y2="1" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2fb6ff"/>
+      <stop offset="48%" stop-color="#1f6fe6"/>
+      <stop offset="100%" stop-color="#1a3fc0"/>
     </linearGradient>
 
-    <!-- 中心发光球 -->
-    <radialGradient id="orb" cx="50%" cy="50%" r="50%">
+    <!-- 左上对角高光 -->
+    <linearGradient id="diag" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#bfe4ff" stop-opacity="0.55"/>
+      <stop offset="55%" stop-color="#bfe4ff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- 右下紫调环境光（层次感来源） -->
+    <radialGradient id="duo" cx="82%" cy="88%" r="75%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7a5cff" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#7a5cff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- 顶部柔光 -->
+    <radialGradient id="topglow" cx="50%" cy="13%" r="64%" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.50"/>
+      <stop offset="62%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- 底部暗角（厚度） -->
+    <radialGradient id="ambient" cx="50%" cy="100%" r="72%" gradientUnits="userSpaceOnUse">
+      <stop offset="52%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#3a2aa0" stop-opacity="0.35"/>
+    </radialGradient>
+
+    <!-- 播放键：白 → 冷白渐变 + 顶部高光 -->
+    <linearGradient id="glyph" x1="0" y1="350" x2="0" y2="700" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="55%" stop-color="#9fd9ff"/>
-      <stop offset="100%" stop-color="#0091ff" stop-opacity="0"/>
-    </radialGradient>
+      <stop offset="100%" stop-color="#e4f1ff"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="350" x2="0" y2="560" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
 
-    <!-- 顶部北极星光晕 -->
-    <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
-      <stop offset="40%" stop-color="#9fd9ff" stop-opacity="0.8"/>
-      <stop offset="100%" stop-color="#0091ff" stop-opacity="0"/>
-    </radialGradient>
-
-    <!-- 内阴影（暗角） -->
-    <radialGradient id="vignette" cx="50%" cy="50%" r="75%">
-      <stop offset="60%" stop-color="#000000" stop-opacity="0"/>
-      <stop offset="100%" stop-color="#000000" stop-opacity="0.55"/>
-    </radialGradient>
-
-    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="14" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+    <filter id="ds" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#001a3a" flood-opacity="0.42"/>
     </filter>
   </defs>
 
-  <!-- 圆角方形背景（squircle 近似：大圆角矩形） -->
-  <rect x="0" y="0" width="1024" height="1024" rx="228" ry="228" fill="url(#bg)"/>
+  <!-- 背景层：每层直接填充 squircle 路径 -->
+  <use href="#sq" fill="url(#base)"/>
+  <use href="#sq" fill="url(#diag)"/>
+  <use href="#sq" fill="url(#duo)"/>
+  <use href="#sq" fill="url(#topglow)"/>
+  <use href="#sq" fill="url(#ambient)"/>
 
-  <!-- 轨道光环（Q 的弧形，从左下绕到右上，不闭合） -->
-  <path
-    d="M 232 620 A 280 280 0 1 1 792 620"
-    stroke="url(#brand)"
-    stroke-width="22"
-    stroke-linecap="round"
-    fill="none"
-    opacity="0.85"
-    filter="url(#softGlow)"
-  />
-
-  <!-- 字母 T（同时是山脉剪影）：竖线 + 顶横 -->
-  <g filter="url(#softGlow)">
-    <!-- 顶横：T 的上沿，两端微斜像山脊 -->
-    <path
-      d="M 312 372 L 712 372"
-      stroke="url(#brand)"
-      stroke-width="44"
-      stroke-linecap="round"
-      fill="none"
-    />
-    <!-- 竖线：T 的竖画，从顶横向下 -->
-    <path
-      d="M 512 372 L 512 720"
-      stroke="url(#brand)"
-      stroke-width="44"
-      stroke-linecap="round"
-      fill="none"
-    />
+  <!-- 圆角播放三角（视觉重心右移补偿；右尖 686 / 左 372 / 半高 168 / 圆角 30） -->
+  <g filter="url(#ds)">
+    <path d="M 682.21 536.80 L 399.00 668.32 Q 372.00 688.00 372.00 656.00 L 372.00 384.00 Q 372.00 352.00 399.00 371.68 L 682.21 503.20 Q 702.00 512.00 682.21 536.80 Z" fill="url(#glyph)"/>
+    <path d="M 682.21 536.80 L 399.00 668.32 Q 372.00 688.00 372.00 656.00 L 372.00 384.00 Q 372.00 352.00 399.00 371.68 L 682.21 503.20 Q 702.00 512.00 682.21 536.80 Z" fill="url(#shine)"/>
   </g>
-
-  <!-- 中心交叉点的发光球（T 与轨道交汇，像太阳/月亮） -->
-  <circle cx="512" cy="512" r="120" fill="url(#orb)" opacity="0.95"/>
-  <circle cx="512" cy="512" r="28" fill="#ffffff"/>
-
-  <!-- 顶部北极星（在 T 顶横正上方，代表 Tengri 苍天） -->
-  <circle cx="512" cy="252" r="60" fill="url(#starGlow)"/>
-  <circle cx="512" cy="252" r="14" fill="#ffffff"/>
-
-  <!-- 左下角星点 -->
-  <circle cx="256" cy="748" r="8" fill="#9fd9ff" opacity="0.85"/>
-  <!-- 右上角星点 -->
-  <circle cx="792" cy="312" r="6" fill="#9fd9ff" opacity="0.7"/>
-  <!-- 右下角小星 -->
-  <circle cx="744" cy="724" r="5" fill="#9fd9ff" opacity="0.6"/>
-
-  <!-- 暗角压暗四周 -->
-  <rect x="0" y="0" width="1024" height="1024" rx="228" ry="228" fill="url(#vignette)"/>
 </svg>

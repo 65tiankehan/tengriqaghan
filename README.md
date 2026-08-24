@@ -1,6 +1,6 @@
 <div align="center">
 
-# 腾格里汗 · Tengri Qaghan
+# 腾格里汗 · Tengri Desk
 
 **你的影视，归你自己管。**
 
