@@ -1,531 +1,815 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tengri Desk · 你的私人影视播放器</title>
-  <meta name="description" content="Tengri Desk（腾格里汗）是一款免费、私人的影视播放器，把你自己的媒体库、网盘和直播电视聚合到一起。免登录即可使用，也可用 GitHub 账号在多设备间同步收藏与进度。数据加密存在本机。Windows 免费下载。" />
-  <meta name="theme-color" content="#010306" />
-  <meta property="og:title" content="Tengri Desk · 你的私人影视播放器" />
-  <meta property="og:description" content="免费、私人、不收集数据。一个播放器，统一你的网盘、家庭媒体库和直播电视。" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://65tiankehan.github.io/tengriqaghan/" />
-  <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
-  <link rel="apple-touch-icon" href="assets/icon-256.png" />
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --bg: #010306;
-      --bg-2: #050b14;
-      --panel: rgba(14, 22, 36, 0.62);
-      --panel-solid: #0b1422;
-      --label: rgba(255, 255, 255, 0.94);
-      --label-2: rgba(255, 255, 255, 0.68);
-      --label-3: rgba(255, 255, 255, 0.42);
-      --accent: #5cb8ff;
-      --accent-e: #0091ff;
-      --border: rgba(255, 255, 255, 0.08);
-      --border-strong: rgba(92, 184, 255, 0.32);
-      --ok: #30d158;
-      --warn: #ffd60a;
-      --radius: 18px;
-    }
-    html, body { height: 100%; scroll-behavior: smooth; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-        "Microsoft YaHei", "Helvetica Neue", system-ui, sans-serif;
-      color: var(--label);
-      background:
-        radial-gradient(1100px 620px at 50% -12%, rgba(0, 145, 255, 0.22), transparent 60%),
-        radial-gradient(900px 560px at 88% 108%, rgba(30, 80, 160, 0.22), transparent 62%),
-        radial-gradient(700px 500px at 8% 80%, rgba(0, 70, 140, 0.14), transparent 60%),
-        var(--bg);
-      min-height: 100%;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-      overflow-x: hidden;
-    }
-    body::before {
-      content: "";
-      position: fixed; inset: 0;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-      opacity: 0.5; mix-blend-mode: overlay; z-index: 1;
-    }
-    .container { position: relative; z-index: 2; max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tengri Desk · 你的私人影视播放器</title>
+<meta name="description" content="Tengri Desk（腾格里汗）是一款免费、私人的影视播放器，把你自己的媒体库、网盘和直播电视聚合到一起。免登录即可使用，也可用 GitHub 账号在多设备间同步收藏与进度；账号加密存在本机。Windows 免费下载。" />
+<meta name="theme-color" content="#050608" />
+<meta property="og:title" content="Tengri Desk · 你的私人影视播放器" />
+<meta property="og:description" content="免费、私人、不收集数据。一个播放器，统一你的网盘、家庭媒体库和直播电视。" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://65tiankehan.github.io/tengriqaghan/" />
+<link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+<link rel="apple-touch-icon" href="assets/icon-256.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050608; --ink:#f4f6f9; --ink-2:rgba(244,246,249,.62); --ink-3:rgba(244,246,249,.38);
+    --line:rgba(255,255,255,.1); --line-2:rgba(255,255,255,.18); --accent:#0091ff; --accent-2:#5cb8ff; --accent-glow:rgba(0,145,255,.45); --ok:#30d158; --warn:#ffd60a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 70px}
+  @media(max-width:760px){.wrap{padding:0 24px}}
 
-    /* 顶部导航 */
-    header.nav { padding: 22px 0; display: flex; align-items: center; justify-content: space-between; }
-    .brand { display: inline-flex; align-items: center; gap: 12px; font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
-    .brand img { width: 32px; height: 32px; border-radius: 8px; }
-    .brand .name { background: linear-gradient(90deg, #fff, #9fd9ff 70%, #5cb8ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-    .nav-links { display: flex; gap: 22px; align-items: center; }
-    .nav-links a { color: var(--label-2); text-decoration: none; font-size: 14px; transition: color .2s; }
-    .nav-links a:hover { color: #fff; }
-    @media (max-width: 640px) { .nav-links a:not(.btn) { display: none; } }
+  /* ===== 固定细线导航（C） ===== */
+  nav.top{position:fixed;top:0;left:0;right:0;z-index:30;backdrop-filter:blur(14px);background:rgba(5,6,8,.55);border-bottom:1px solid transparent;transition:background .3s,border-color .3s}
+  nav.top.solid{background:rgba(5,6,8,.82);border-bottom-color:var(--line)}
+  .nav-in{max-width:1280px;margin:0 auto;padding:0 70px;height:62px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:15px;letter-spacing:-.01em}
+  .brand .mk{width:28px;height:28px;border-radius:7px;overflow:hidden;box-shadow:0 0 0 .5px rgba(255,255,255,.12)}
+  .brand .mk img{width:100%;height:100%;display:block}
+  .top-links{display:flex;gap:34px;align-items:center}
+  .top-links a{font-size:13px;color:var(--ink-2);transition:color .2s}
+  .top-links a:hover{color:#fff}
+  .top-links .gh{padding:8px 16px;border:1px solid var(--line-2);border-radius:8px;color:#fff}
+  @media(max-width:760px){.nav-in{padding:0 24px}.top-links a:not(.gh){display:none}}
 
-    /* Hero */
-    section.hero { padding: 64px 0 40px; text-align: center; animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
-    @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-    .hero-icon { width: 104px; height: 104px; margin: 0 auto 26px; border-radius: 26px; box-shadow: 0 30px 80px rgba(0, 145, 255, 0.35), 0 0 0 1px rgba(255,255,255,0.06); animation: float 6s ease-in-out infinite; }
-    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-    .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; background: rgba(48, 209, 88, 0.1); border: 0.5px solid rgba(48, 209, 88, 0.32); color: var(--ok); font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em; margin-bottom: 22px; }
-    .badge .pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); animation: pulse 1.6s ease-in-out infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
-    h1 { font-size: clamp(36px, 6vw, 60px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; margin-bottom: 20px; background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.72) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-    p.lead { font-size: clamp(15.5px, 2vw, 18px); line-height: 1.75; color: var(--label-2); max-width: 620px; margin: 0 auto 30px; }
-    .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-    a.btn { display: inline-flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 28px; border-radius: 14px; text-decoration: none; font-size: 15px; font-weight: 600; transition: transform .18s ease, box-shadow .2s ease, background .2s ease; cursor: pointer; border: 0.5px solid transparent; }
-    a.btn.primary { background: linear-gradient(180deg, #6ec6ff, #0091ff); color: #fff; box-shadow: 0 14px 40px rgba(0, 145, 255, 0.42), inset 0 1px 0 rgba(255,255,255,0.25); }
-    a.btn.primary:hover { transform: translateY(-2px); box-shadow: 0 20px 50px rgba(0,145,255,0.55), inset 0 1px 0 rgba(255,255,255,0.3); }
-    a.btn.ghost { background: rgba(255,255,255,0.04); color: var(--label); border-color: var(--border); backdrop-filter: blur(12px); }
-    a.btn.ghost:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
-    .btn svg { width: 18px; height: 18px; }
-    .meta { margin-top: 20px; font-size: 13px; color: var(--label-3); }
-    .meta strong { color: var(--label-2); font-weight: 600; }
+  /* ===== HERO：A 的全屏影院光场 + C 的巨型字 ===== */
+  .hero{position:relative;height:100svh;min-height:640px;width:100%;overflow:hidden;display:flex;flex-direction:column;background:#050608}
+  /* 纯 CSS 影院氛围：右上一块发光银幕投下冷蓝光，无外部图、不占位 */
+  .hero-img{position:absolute;inset:0;overflow:hidden;animation:heroDrift 30s ease-in-out infinite alternate}
+  .hero-img::before{content:"";position:absolute;top:-10%;right:-8%;width:62vw;height:78vh;
+    background:radial-gradient(120% 120% at 70% 45%,
+      rgba(214,232,255,.55) 0%,
+      rgba(94,160,255,.32) 18%,
+      rgba(36,96,200,.18) 38%,
+      rgba(10,20,46,.06) 58%,
+      transparent 72%);
+    filter:blur(28px)}
+  .hero-img::after{content:"";position:absolute;top:8%;right:4%;width:46vw;height:46vh;
+    border-radius:4px 4px 2px 2px;
+    background:radial-gradient(120% 100% at 50% 40%,
+      rgba(225,238,255,.22) 0%,
+      rgba(120,170,255,.08) 45%,
+      transparent 75%);
+    box-shadow:0 0 180px 60px rgba(80,140,255,.18)}
+  @keyframes heroDrift{0%{transform:translate3d(0,0,0) scale(1.04)}100%{transform:translate3d(-2.5%,1.2%,0) scale(1.1)}}
+  .hero-veil{position:absolute;inset:0;z-index:1;
+    background:
+      linear-gradient(90deg, rgba(5,6,8,.96) 0%, rgba(5,6,8,.72) 38%, rgba(5,6,8,.35) 62%, rgba(5,6,8,.5) 100%),
+      linear-gradient(180deg, rgba(5,6,8,.55) 0%, transparent 22%, transparent 55%, rgba(5,6,8,.97) 100%);}
+  .grain{position:absolute;inset:0;pointer-events:none;opacity:.07;mix-blend-mode:overlay;z-index:2;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");}
+  .hero-inner{position:relative;z-index:3;flex:1;display:flex;flex-direction:column;justify-content:flex-end;
+    max-width:1280px;width:100%;margin:0 auto;padding:0 70px 9vh}
+  .hero-meta{display:flex;justify-content:space-between;align-items:center;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,246,249,.55);margin-bottom:34px}
+  .hero-meta .l{display:flex;gap:22px;align-items:center}
+  .hero-meta .rec{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 12px var(--ok);animation:blink 2s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+  h1.hero-h{font-weight:900;line-height:.9;letter-spacing:-.045em;margin-bottom:30px;font-size:clamp(48px,8.6vw,132px)}
+  h1.hero-h .row{display:block;overflow:hidden}
+  h1.hero-h .row span{display:block;transform:translateY(110%);animation:slide 1.05s cubic-bezier(.2,.8,.2,1) forwards}
+  h1.hero-h .row:nth-child(2) span{animation-delay:.12s}
+  h1.hero-h .row:nth-child(3) span{animation-delay:.24s}
+  h1.hero-h .ac{color:var(--accent)}
+  @keyframes slide{to{transform:translateY(0)}}
+  .hero-foot{display:grid;grid-template-columns:1fr auto;gap:44px;align-items:end;padding-top:26px;border-top:1px solid rgba(255,255,255,.14);max-width:1000px}
+  .hero-foot p{font-size:clamp(14.5px,1.35vw,17.5px);line-height:1.65;color:rgba(244,246,249,.72);max-width:48ch}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}
+  .btn{display:inline-flex;align-items:center;gap:9px;height:50px;padding:0 26px;border-radius:10px;font-size:14.5px;font-weight:600;transition:transform .2s,background .2s,border-color .2s,box-shadow .2s;white-space:nowrap}
+  .btn-primary{background:#fff;color:#050608;box-shadow:0 18px 50px rgba(0,145,255,.3)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 24px 60px rgba(0,145,255,.42)}
+  .btn-ghost{border:1px solid var(--line-2);color:#fff;backdrop-filter:blur(8px);background:rgba(255,255,255,.04)}
+  .btn-ghost:hover{background:rgba(255,255,255,.1);transform:translateY(-2px)}
+  .scroll-hint{position:absolute;right:70px;bottom:9vh;z-index:3;writing-mode:vertical-rl;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-3);display:flex;gap:14px;align-items:center}
+  .scroll-hint::after{content:"";width:1px;height:56px;background:linear-gradient(var(--accent),transparent);animation:drop 2.6s ease-in-out infinite}
+  @keyframes drop{0%,100%{transform:scaleY(.4);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}}
+  @media(max-width:820px){.hero-inner{padding:0 24px 8vh}.hero-foot{grid-template-columns:1fr}.hero-cta{justify-content:flex-start}.scroll-hint{display:none}.hero-meta .r{display:none}}
 
-    /* 三条承诺 */
-    .promises { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 760px; margin: 40px auto 0; }
-    .promise { background: var(--panel); border: 0.5px solid var(--border); border-radius: 14px; padding: 18px 16px; backdrop-filter: blur(20px); }
-    .promise .pk { font-size: 22px; margin-bottom: 8px; }
-    .promise h4 { font-size: 14.5px; font-weight: 650; margin-bottom: 4px; }
-    .promise p { font-size: 12.5px; line-height: 1.6; color: var(--label-3); }
-    @media (max-width: 640px) { .promises { grid-template-columns: 1fr; } }
+  /* ===== 产品展示段：3D 漂浮窗口 ===== */
+  .product{position:relative;z-index:2;padding:60px 0 150px;
+    background:
+      radial-gradient(900px 500px at 50% 8%, rgba(0,145,255,.10), transparent 60%),
+      linear-gradient(180deg, rgba(5,6,8,1) 0%, rgba(7,9,13,1) 100%)}
+  .product-head{text-align:center;max-width:680px;margin:0 auto 60px}
+  .product-head .idx{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+  .product-head h2{font-size:clamp(28px,3.8vw,48px);font-weight:800;letter-spacing:-.03em;margin:16px 0 14px;line-height:1.1}
+  .product-head p{font-size:15.5px;line-height:1.7;color:var(--ink-2)}
 
-    /* 截图展示 */
-    section.showcase { padding: 32px 0 16px; }
-    .shot-wrap { position: relative; max-width: 960px; margin: 0 auto; border-radius: 16px; overflow: hidden; border: 0.5px solid var(--border); box-shadow: 0 40px 100px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04); background: var(--bg-2); }
-    .shot-wrap::after { content:""; position:absolute; inset:0; pointer-events:none; box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.04); border-radius: 16px; }
-    .shot-main { display: block; width: 100%; height: auto; transition: opacity .3s ease; }
-    .shot-main.fade { opacity: 0; }
-    .shot-caption { display: flex; align-items: center; gap: 10px; justify-content: center; margin-top: 18px; font-size: 14px; color: var(--label-2); }
-    .shot-caption .cap { min-width: 120px; text-align: center; }
-    .thumb-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
-    .thumb { width: 112px; border-radius: 9px; border: 1.5px solid transparent; overflow: hidden; cursor: pointer; opacity: 0.6; transition: all .2s; background: var(--bg-2); }
-    .thumb img { display: block; width: 100%; height: auto; }
-    .thumb:hover { opacity: 1; }
-    .thumb.active { opacity: 1; border-color: var(--accent); box-shadow: 0 6px 20px rgba(0,145,255,0.35); }
-    .thumb-label { font-size: 11px; color: var(--label-3); text-align: center; margin-top: 6px; }
-    .thumb.active .thumb-label { color: var(--accent); }
+  .stage{position:relative;max-width:1100px;margin:0 auto;padding:0 40px;height:680px;
+    perspective:1800px;}
+  #threeCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;display:block}
+  .win-content{
+    position:absolute;z-index:3;left:0;top:0;
+    width:min(960px,82vw);
+    border-radius:24px;overflow:hidden;background:#000;
+    transform-style:preserve-3d;will-change:transform;
+    box-shadow:0 2px 0 rgba(255,255,255,.06) inset;
+    opacity:0;transition:opacity 1s .15s ease;
+  }
+  .win-content.shown{opacity:1}
+  .stage.fallback{perspective:1800px}
+  .stage.fallback .win-content{left:50%;top:50%;opacity:1;transform:translate(-50%,-50%) rotateX(6deg)}
 
-    /* 通用区块 */
-    section { padding: 56px 0; }
-    .section-title { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--label-3); text-align: center; margin-bottom: 12px; }
-    .section-h2 { text-align: center; font-size: clamp(22px, 3vw, 30px); font-weight: 750; letter-spacing: -0.02em; margin-bottom: 14px; }
-    .section-sub { text-align: center; color: var(--label-2); font-size: 15px; line-height: 1.7; max-width: 600px; margin: 0 auto 36px; }
+  /* 顶部浮动胶囊 Toolbar */
+  .toolbar{position:relative;z-index:5;height:52px;margin:14px 14px 0;border-radius:9999px;
+    background:rgba(0,0,0,.8);backdrop-filter:blur(14px) saturate(1.8) brightness(1.1);-webkit-backdrop-filter:blur(14px) saturate(1.8) brightness(1.1);
+    border:.5px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+    display:flex;align-items:center;gap:14px;padding:0 8px 0 18px}
+  .tb-brand{display:flex;align-items:center;gap:8px;flex-shrink:0}
+  .tb-brand .dot{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 10px rgba(255,255,255,.8)}
+  .tb-brand .t1{font-family:Georgia,serif;font-size:10px;letter-spacing:.18em;color:rgba(235,235,245,.6);text-transform:lowercase}
+  .tb-brand .sep{width:1px;height:14px;background:rgba(255,255,255,.14)}
+  .tb-brand .t2{font-family:Georgia,serif;font-size:15px;color:#fff;font-weight:400}
+  .pills{display:flex;align-items:center;gap:2px;background:rgba(255,255,255,.06);border-radius:9999px;padding:3px}
+  .pill{font-size:12px;color:rgba(235,235,245,.6);padding:6px 13px;border-radius:9999px;white-space:nowrap;transition:all .3s}
+  .pill.on{background:rgba(255,255,255,.22);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 0 0 .5px rgba(255,255,255,.25)}
+  .tb-search{margin-left:auto;width:200px;height:34px;border-radius:9999px;background:rgba(255,255,255,.08);
+    display:flex;align-items:center;gap:8px;padding:0 14px;font-size:11.5px;color:rgba(235,235,245,.4)}
+  .tb-search .kbd{margin-left:auto;font-family:"JetBrains Mono",monospace;font-size:10px;color:rgba(235,235,245,.5);border:.5px solid rgba(255,255,255,.14);padding:1px 5px;border-radius:5px}
+  .tb-ico{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:rgba(235,235,245,.7);font-size:13px;flex-shrink:0}
+  .tb-ava{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5cb8ff,#0091ff);flex-shrink:0;display:grid;place-items:center;font-size:11px;color:#fff;font-weight:700}
+  .tb-tl{display:flex;gap:0;margin-left:2px;padding-left:8px;border-left:.5px solid rgba(255,255,255,.1)}
+  .tb-tl b{width:34px;height:34px;display:grid;place-items:center;font-size:12px;color:rgba(235,235,245,.7)}
 
-    /* 三步上手 */
-    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .step { background: var(--panel); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 26px 22px; position: relative; }
-    .step .num { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #6ec6ff, #0091ff); color: #fff; font-weight: 700; display: grid; place-items: center; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(0,145,255,0.35); }
-    .step h3 { font-size: 16.5px; font-weight: 650; margin-bottom: 8px; }
-    .step p { font-size: 13.5px; line-height: 1.7; color: var(--label-2); }
-    .step .tag { display: inline-block; margin-top: 12px; font-size: 12px; color: var(--accent); background: rgba(0,145,255,0.1); border: 0.5px solid rgba(92,184,255,0.25); padding: 4px 10px; border-radius: 999px; word-break: break-all; }
-    @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } }
+  /* 内容滚动区 */
+  .screen{position:relative;z-index:1;padding:18px 32px 124px;max-width:1280px;margin:0 auto}
+  /* App 内 Hero 横幅：纯 CSS 渐变，无外部图 */
+  .app-hero{position:relative;height:300px;border-radius:20px;overflow:hidden;background:#0a0a0c;
+    box-shadow:0 24px 60px rgba(0,0,0,.5)}
+  .app-hero__bg{position:absolute;inset:0;
+    background:
+      radial-gradient(120% 90% at 78% 28%, rgba(255,210,140,.55) 0%, rgba(255,150,60,.22) 26%, transparent 55%),
+      radial-gradient(80% 80% at 22% 78%, rgba(20,60,120,.5) 0%, transparent 60%),
+      linear-gradient(135deg, #2a1a10 0%, #4a2a14 38%, #1a3a5a 72%, #0a1428 100%)}
+  .app-hero__veil{position:absolute;inset:0;
+    background:linear-gradient(90deg,rgba(0,0,0,.78) 0%,rgba(0,0,0,.42) 42%,rgba(0,0,0,.12) 70%),linear-gradient(180deg,rgba(0,0,0,.3) 0%,transparent 40%,rgba(0,0,0,.7) 100%)}
+  .app-hero__c{position:absolute;left:28px;bottom:24px;right:28px;max-width:520px}
+  .kick{display:flex;align-items:center;gap:10px;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(235,235,245,.55);margin-bottom:10px}
+  .kick::before{content:"";width:20px;height:1px;background:rgba(235,235,245,.5)}
+  .app-hero h3{font-family:Georgia,serif;font-size:30px;font-weight:700;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.6);margin-bottom:10px;line-height:1.1}
+  .app-hero .meta{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:rgba(235,235,245,.75);display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .app-hero .meta .star{color:#ffd60a}
+  .app-hero .meta .q{border:.5px solid rgba(255,255,255,.3);padding:1px 6px;border-radius:5px;font-size:9px}
+  .app-hero .desc{font-size:12px;line-height:1.6;color:rgba(235,235,245,.72);margin-bottom:16px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .app-hero .acts{display:flex;gap:10px}
+  .hbtn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 16px;border-radius:9999px;font-size:12px;font-weight:600}
+  .hbtn.play{background:rgba(255,255,255,.95);color:#000}
+  .hbtn.fav{background:rgba(0,0,0,.42);color:#fff;border:.5px solid rgba(255,255,255,.3)}
+  .hbtn.fav .h{color:#ff375f}
+  .app-hero__prog{position:absolute;right:24px;bottom:24px;text-align:right;display:none}
+  @media(min-width:680px){.app-hero__prog{display:block}}
+  .app-hero__prog .cl{font-size:9px;letter-spacing:.2em;color:rgba(235,235,245,.5);margin-bottom:5px}
+  .app-hero__prog .tm{font-family:"JetBrains Mono",monospace;font-size:11px;color:#fff;margin-bottom:6px}
+  .app-hero__prog .bar{width:130px;height:3px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden;margin-left:auto}
+  .app-hero__prog .bar i{display:block;height:100%;width:62%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
 
-    /* 功能网格 */
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
-    .feat { background: var(--panel); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 24px; backdrop-filter: blur(28px) saturate(1.6); -webkit-backdrop-filter: blur(28px) saturate(1.6); transition: transform .25s ease, border-color .25s ease; position: relative; overflow: hidden; }
-    .feat::before { content: ""; position: absolute; inset: 0; background: radial-gradient(400px 120px at 0% 0%, rgba(0,145,255,0.18), transparent 60%); opacity: 0; transition: opacity .3s ease; pointer-events: none; }
-    .feat:hover { transform: translateY(-3px); border-color: var(--border-strong); }
-    .feat:hover::before { opacity: 1; }
-    .feat .ico { width: 40px; height: 40px; border-radius: 11px; background: linear-gradient(135deg, rgba(0,145,255,0.22), rgba(92,184,255,0.06)); border: 0.5px solid rgba(92,184,255,0.25); display: grid; place-items: center; margin-bottom: 16px; color: var(--accent); }
-    .feat .ico svg { width: 20px; height: 20px; }
-    .feat h3 { font-size: 16px; font-weight: 650; margin-bottom: 8px; letter-spacing: -0.01em; }
-    .feat p { font-size: 13.5px; line-height: 1.65; color: var(--label-2); }
+  /* 区块标题 */
+  .sec-h{display:flex;align-items:baseline;gap:10px;margin:26px 4px 14px}
+  .sec-h .t{font-size:15px;font-weight:700}
+  .sec-h .s{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(235,235,245,.3)}
+  .sec-h .more{margin-left:auto;font-size:11px;color:rgba(235,235,245,.6);padding:5px 12px;border:.5px solid rgba(255,255,255,.1);border-radius:9999px}
 
-    /* 片源 */
-    .src-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 8px; }
-    .src-chip { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; background: rgba(255,255,255,0.04); border: 0.5px solid var(--border); font-size: 13.5px; color: var(--label-2); }
-    .src-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
-    .src-note { text-align: center; margin-top: 18px; font-size: 13px; color: var(--label-3); }
-    .src-note a { color: var(--accent); text-decoration: none; }
+  /* 继续观看：缩略图纯 CSS 渐变 */
+  .cont-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .cont{display:flex;gap:11px;padding:10px;border-radius:14px;background:rgba(255,255,255,.035);border:.5px solid rgba(255,255,255,.06);transition:transform .25s,border-color .25s}
+  .cont:hover{transform:translateY(-3px);border-color:rgba(0,145,255,.35)}
+  .cont .th{width:84px;aspect-ratio:16/10;border-radius:10px;flex-shrink:0;background:#111;position:relative;overflow:hidden}
+  .cont .body{min-width:0;padding:4px 4px 4px 0;display:flex;flex-direction:column;justify-content:center}
+  .cont .tt{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+  .cont .mm{font-family:"JetBrains Mono",monospace;font-size:9px;color:rgba(235,235,245,.4);margin-bottom:8px}
+  .cont .pb{height:3px;border-radius:3px;background:rgba(255,255,255,.14);overflow:hidden}
+  .cont .pb i{display:block;height:100%;background:var(--accent)}
 
-    /* 安全区块 */
-    .safety { background: linear-gradient(180deg, rgba(14,28,48,0.55), rgba(6,12,22,0.55)); border: 0.5px solid var(--border); border-radius: 24px; padding: 40px; backdrop-filter: blur(20px); }
-    .safety-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
-    .safe-item { display: flex; gap: 14px; align-items: flex-start; }
-    .safe-item .ck { flex: none; width: 26px; height: 26px; border-radius: 8px; background: rgba(48,209,88,0.12); border: 0.5px solid rgba(48,209,88,0.3); color: var(--ok); display: grid; place-items: center; }
-    .safe-item .ck svg { width: 15px; height: 15px; }
-    .safe-item h4 { font-size: 14.5px; font-weight: 650; margin-bottom: 4px; }
-    .safe-item p { font-size: 13px; line-height: 1.6; color: var(--label-2); }
-    @media (max-width: 760px) { .safety-grid { grid-template-columns: 1fr; } .safety { padding: 28px 22px; } }
+  /* 海报行：竖版渐变 */
+  .poster-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+  .poster{aspect-ratio:2/3;border-radius:14px;overflow:hidden;position:relative;background:#111;border:.5px solid rgba(255,255,255,.05)}
+  .poster .grad{position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.9))}
+  .poster .th{position:absolute;inset:0}
+  .poster .cap{position:absolute;left:8px;right:8px;bottom:8px}
+  .poster .cap .pt{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .poster .cap .pm{font-family:"JetBrains Mono",monospace;font-size:8.5px;color:var(--accent-2);margin-top:2px}
+  .poster .badge{position:absolute;top:7px;left:7px;font-size:8px;font-weight:700;letter-spacing:.12em;padding:2px 6px;border-radius:5px}
+  .poster .badge.hot{background:#ff4245;color:#fff}
+  .poster .badge.new{background:#fff;color:#000}
+  .poster .badge.q{background:var(--accent);color:#000}
 
-    .smartscreen { margin-top: 22px; background: rgba(255,214,10,0.06); border: 0.5px solid rgba(255,214,10,0.28); border-radius: 14px; padding: 18px 20px; }
-    .smartscreen h4 { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--warn); margin-bottom: 8px; }
-    .smartscreen p { font-size: 13px; line-height: 1.7; color: var(--label-2); }
-    .smartscreen p strong { color: var(--label); }
+  /* 底部浮动 Nowbar */
+  .nowbar{position:absolute;left:30px;right:30px;bottom:20px;z-index:8;height:78px;border-radius:26px;
+    background:rgba(0,0,0,.8);backdrop-filter:blur(14px) saturate(1.8) brightness(1.1);-webkit-backdrop-filter:blur(14px) saturate(1.8) brightness(1.1);
+    border:.5px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 20px 50px rgba(0,0,0,.5);
+    padding:12px 22px;display:flex;flex-direction:column;gap:9px}
+  .nb-progress{display:flex;align-items:center;gap:12px}
+  .nb-progress .t{font-family:"JetBrains Mono",monospace;font-size:9.5px;color:rgba(235,235,245,.5);width:36px;text-align:center}
+  .nb-track{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+  .nb-track i{position:absolute;left:0;top:0;bottom:0;width:38%;background:linear-gradient(90deg,var(--accent-2),var(--accent));border-radius:4px;box-shadow:0 0 8px var(--accent-glow)}
+  .nb-main{display:flex;align-items:center;gap:14px}
+  .nb-cover{width:42px;height:42px;border-radius:9px;flex-shrink:0}
+  .nb-info{min-width:0;width:150px}
+  .nb-info .nt{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nb-info .ns{font-size:10px;color:rgba(235,235,245,.45);margin-top:2px}
+  .nb-ctrl{flex:1;display:flex;align-items:center;justify-content:center;gap:8px}
+  .nb-ctrl .b{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:rgba(235,235,245,.8);font-size:12px}
+  .nb-ctrl .play{width:38px;height:38px;border-radius:50%;background:#fff;color:#000;font-size:13px}
+  .nb-right{display:flex;align-items:center;gap:8px;color:rgba(235,235,245,.7)}
+  .nb-vol{width:70px;height:4px;border-radius:4px;background:rgba(255,255,255,.16);position:relative}
+  .nb-vol i{position:absolute;left:0;top:0;bottom:0;width:65%;background:#fff;border-radius:4px}
+  @media(max-width:680px){.nb-info{display:none}.nb-vol{display:none}.toolbar .pills .pill:not(.on){display:none}.toolbar .pill{padding:6px 10px}.screen{padding:14px 16px 118px}.app-hero{height:240px}.app-hero h3{font-size:23px}.poster-grid{grid-template-columns:repeat(4,1fr)}.cont-grid{grid-template-columns:repeat(2,1fr)}.tb-search{display:none}.stage{padding:0 18px}.product{padding-bottom:110px}.product-head{margin-bottom:40px}}
+  @media(max-width:480px){.poster-grid{grid-template-columns:repeat(3,1fr)}.cont-grid{grid-template-columns:1fr}.nowbar{left:16px;right:16px}}
 
-    /* FAQ */
-    .faq { max-width: 760px; margin: 0 auto; }
-    details.qa { background: var(--panel); border: 0.5px solid var(--border); border-radius: 14px; padding: 16px 20px; margin-bottom: 12px; transition: border-color .2s; }
-    details.qa[open] { border-color: var(--border-strong); }
-    details.qa summary { cursor: pointer; font-size: 15px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; align-items: center; }
-    details.qa summary::-webkit-details-marker { display: none; }
-    details.qa summary::after { content: "+"; color: var(--label-3); font-size: 20px; font-weight: 300; transition: transform .2s; }
-    details.qa[open] summary::after { content: "−"; }
-    details.qa p { margin-top: 12px; font-size: 13.5px; line-height: 1.75; color: var(--label-2); }
-    details.qa p a { color: var(--accent); text-decoration: none; }
+  /* 两侧漂浮数据卡 */
+  .float{position:absolute;z-index:6;display:none}
+  @media(min-width:1240px){.float{display:block}}
+  .float.f1{left:-6px;top:150px;animation:bob 7s ease-in-out infinite}
+  .float.f2{right:-6px;top:300px;animation:bob 8s 1s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+  .fcard{background:rgba(16,21,29,.74);border:1px solid var(--line-2);border-radius:13px;padding:15px 17px;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 24px 60px rgba(0,0,0,.5);min-width:184px}
+  .fcard .ft{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
+  .fcard .fv{font-size:26px;font-weight:700;letter-spacing:-.02em}
+  .fcard .fv .u{font-size:13px;color:var(--ink-2);font-weight:500;margin-left:4px}
+  .fcard .fd{font-size:11.5px;color:var(--ink-2);margin-top:8px;display:flex;align-items:center;gap:6px}
+  .fcard .fd .g{color:var(--ok)}
+  .srclist{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+  .srclist .si{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--ink-2)}
+  .srclist .si .d{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+  .srclist .si .d.ok{background:var(--ok);box-shadow:0 0 8px var(--ok)}
 
-    /* 下载卡 */
-    section.download { padding: 24px 0 72px; }
-    .dl-card { background: linear-gradient(180deg, rgba(14,28,48,0.7), rgba(6,12,22,0.7)); border: 0.5px solid var(--border-strong); border-radius: 24px; padding: 40px; text-align: center; backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); box-shadow: 0 40px 120px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); position: relative; overflow: hidden; }
-    .dl-card::before { content: ""; position: absolute; top: -50%; left: 50%; width: 600px; height: 600px; transform: translateX(-50%); background: radial-gradient(circle, rgba(0,145,255,0.18), transparent 60%); pointer-events: none; }
-    .dl-card > * { position: relative; z-index: 1; }
-    .dl-card h2 { font-size: clamp(22px, 3vw, 28px); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 10px; }
-    .dl-card p { color: var(--label-2); font-size: 14.5px; margin-bottom: 28px; }
-    .dl-platforms { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
-    .platform { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 0.5px solid var(--border); font-size: 13.5px; color: var(--label-3); }
-    .platform.win { color: var(--label); border-color: var(--border-strong); background: rgba(0,145,255,0.08); }
-    .platform.soon { opacity: 0.55; }
-    .platform svg { width: 16px; height: 16px; }
+  /* ===== 通用 section ===== */
+  section{padding:120px 0;position:relative;z-index:2}
+  .sec-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:56px}
+  .sec-head .idx{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+  .sec-head h2{font-size:clamp(28px,3.6vw,46px);font-weight:800;letter-spacing:-.03em;margin-top:14px;line-height:1.05}
+  .sec-head .meta-r{font-size:12.5px;color:var(--ink-3)}
+  @media(max-width:680px){.sec-head{flex-direction:column;gap:10px;margin-bottom:36px}section{padding:80px 0}}
 
-    /* footer */
-    footer { padding: 36px 0 48px; border-top: 0.5px solid var(--border); text-align: center; font-size: 13px; color: var(--label-3); }
-    footer a { color: var(--label-2); text-decoration: none; margin: 0 8px; transition: color .2s; }
-    footer a:hover { color: #fff; }
-    footer .row { margin-bottom: 8px; }
+  /* 能力索引表（C） */
+  table.feat{width:100%;border-collapse:collapse}
+  table.feat tr{border-top:1px solid var(--line);transition:background .3s}
+  table.feat tr:last-child{border-bottom:1px solid var(--line)}
+  table.feat tr:hover{background:rgba(0,145,255,.055)}
+  table.feat td{padding:32px 0;vertical-align:top}
+  table.feat .col-idx{width:96px;color:var(--ink-3);font-size:13px;padding-right:24px}
+  table.feat .col-t{width:36%;font-size:clamp(20px,2.3vw,29px);font-weight:700;letter-spacing:-.02em;padding-right:36px}
+  table.feat .col-d{font-size:15px;line-height:1.7;color:var(--ink-2)}
+  table.feat .col-go{width:56px;text-align:right;color:var(--ink-3);font-size:20px;transition:transform .3s,color .3s}
+  table.feat tr:hover .col-go{color:var(--accent);transform:translateX(5px)}
+  @media(max-width:680px){table.feat .col-idx{width:48px;padding-right:14px}table.feat .col-t{width:100%;padding:0 0 8px;font-size:19px}table.feat .col-go{display:none}table.feat td{display:block;padding:24px 0}}
 
-    @media (max-width: 640px) {
-      section.hero { padding: 40px 0 32px; }
-      .hero-icon { width: 84px; height: 84px; border-radius: 22px; }
-      .dl-card { padding: 28px 20px; }
-      .feat { padding: 20px; }
-    }
-  </style>
+  /* ===== 全宽氛围图带（A，纯 CSS） ===== */
+  .band{position:relative;height:58vh;min-height:400px;overflow:hidden;display:flex;align-items:center;z-index:2;background:#06090f}
+  .band-img{position:absolute;inset:-4%;transition:transform 1.4s cubic-bezier(.2,.8,.2,1);
+    background:
+      radial-gradient(60% 80% at 28% 45%, rgba(70,130,220,.32) 0%, rgba(20,50,110,.18) 38%, transparent 66%),
+      radial-gradient(40% 60% at 72% 60%, rgba(120,170,255,.12) 0%, transparent 60%),
+      linear-gradient(105deg, #05080e 0%, #0a1626 42%, #070d18 100%)}
+  /* 胶片盘光晕 */
+  .band-img::before{content:"";position:absolute;left:12%;top:50%;width:340px;height:340px;border-radius:50%;transform:translateY(-50%);
+    background:radial-gradient(circle, rgba(120,170,255,.18) 0%, rgba(40,80,150,.08) 45%, transparent 68%);
+    box-shadow:inset 0 0 80px rgba(0,0,0,.6)}
+  /* 一道斜射光束 */
+  .band-img::after{content:"";position:absolute;left:8%;top:-20%;width:160px;height:160%;
+    background:linear-gradient(90deg, transparent, rgba(140,185,255,.16), transparent);transform:rotate(12deg);filter:blur(14px)}
+  .band.in .band-img{transform:scale(1.04)}
+  .band-veil{position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,6,8,.92) 0%,rgba(5,6,8,.6) 45%,rgba(5,6,8,.35) 100%),linear-gradient(180deg,rgba(5,6,8,.5),transparent 30%,transparent 60%,rgba(5,6,8,.6))}
+  .band .content{position:relative;z-index:2;max-width:1280px;width:100%;margin:0 auto;padding:0 70px}
+  .band .q{font-size:clamp(26px,3.4vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.18;max-width:16ch}
+  .band .q .ac{color:var(--accent)}
+  .band .qs{margin-top:22px;font-size:15px;color:var(--ink-2);max-width:46ch;line-height:1.7}
+  .band .mono{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3);margin-bottom:24px;display:flex;align-items:center;gap:12px}
+  .band .mono::before{content:"";width:30px;height:1px;background:var(--accent)}
+  @media(max-width:760px){.band .content{padding:0 24px}}
+
+  /* 片源网格（C，等宽） */
+  .src-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+  .src-grid .cell{background:var(--bg);padding:34px 26px;transition:background .3s}
+  .src-grid .cell:hover{background:rgba(0,145,255,.07)}
+  .src-grid .cell .tag{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+  .src-grid .cell .tag .d{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+  .src-grid .cell .nm{font-size:20px;font-weight:600;margin-bottom:8px}
+  .src-grid .cell .ds{font-size:13px;color:var(--ink-2);line-height:1.5}
+  @media(max-width:860px){.src-grid{grid-template-columns:repeat(2,1fr)}}
+
+  /* final CTA（大字幕 + 纯 CSS 影院底图） */
+  .final{position:relative;text-align:center;overflow:hidden;z-index:2;background:#050608}
+  .final-bg{position:absolute;inset:-4%;opacity:.6;
+    background:
+      radial-gradient(60% 50% at 50% 24%, rgba(150,195,255,.32) 0%, rgba(60,110,200,.16) 34%, transparent 62%),
+      linear-gradient(180deg, #0a1020 0%, #070b14 46%, #050608 100%)}
+  /* 银幕下方一排座椅剪影 */
+  .final-bg::after{content:"";position:absolute;left:0;right:0;bottom:16%;height:28%;
+    background:
+      repeating-linear-gradient(90deg, rgba(0,0,0,.55) 0 22px, rgba(8,12,20,.55) 22px 44px),
+      linear-gradient(180deg, transparent, rgba(0,0,0,.85));
+    mask-image:linear-gradient(180deg, transparent 0%, #000 40%, #000 100%);
+    -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 40%, #000 100%)}
+  .final-veil{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 0%,rgba(5,6,8,.85) 70%),linear-gradient(180deg,var(--bg),transparent 30%,transparent 60%,var(--bg))}
+  .final .wrap{position:relative;z-index:2}
+  .final .k{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);margin-bottom:26px}
+  .final h2{font-size:clamp(40px,7vw,92px);font-weight:900;letter-spacing:-.05em;line-height:.96;margin-bottom:34px}
+  .final .btn{height:56px;padding:0 40px;font-size:15.5px}
+  .final .plat{margin-top:30px;display:flex;gap:28px;justify-content:center;flex-wrap:wrap;font-size:13px;color:var(--ink-3)}
+  .final .plat b{color:var(--ink);font-weight:600}
+  .smart{max-width:560px;margin:26px auto 0;font-size:12.5px;line-height:1.7;color:var(--ink-3);
+    background:rgba(255,214,10,.06);border:.5px solid rgba(255,214,10,.28);border-radius:12px;padding:14px 18px;text-align:left}
+  .smart b{color:var(--warn);font-weight:600}
+  .smart a{color:var(--accent-2)}
+
+  footer{padding:40px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;color:var(--ink-3);font-size:12.5px;position:relative;z-index:2}
+  footer .fl{display:flex;gap:20px;flex-wrap:wrap}
+  footer a:hover{color:#fff}
+
+  .rv{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.2,.8,.2,1),transform .9s cubic-bezier(.2,.8,.2,1)}
+  .rv.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.hero-img{animation:none}.hero-h .row span{animation:none;transform:none}.float{animation:none}.band-img{transition:none}.rv{opacity:1;transform:none;transition:none}}
+</style>
 </head>
 <body>
-  <div class="container">
-    <!-- 顶部导航 -->
-    <header class="nav">
-      <div class="brand">
-        <img src="assets/icon.svg" alt="" />
-        <span class="name">Tengri Desk</span>
-      </div>
-      <nav class="nav-links">
-        <a href="#how">怎么用</a>
-        <a href="#features">功能</a>
-        <a href="#safety">安全</a>
-        <a href="#faq">常见问题</a>
-        <a class="btn ghost" href="https://github.com/65tiankehan/tengriqaghan-releases/releases/latest" target="_blank" rel="noreferrer" style="min-height:38px;padding:0 18px;font-size:13px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          下载
-        </a>
-      </nav>
-    </header>
 
-    <!-- Hero -->
-    <section class="hero">
-      <img class="hero-icon" src="assets/icon.svg" alt="Tengri Desk" />
-      <div class="badge"><span class="pulse"></span> 免费下载 · Windows 可用</div>
-      <h1>你自己的影视，<br />用一个播放器管好</h1>
-      <p class="lead">
-        腾格里汗是一款<strong style="color:#fff;">私人影视播放器</strong>，不是视频网站。
-        它把你电脑里的视频、网盘、家庭媒体库和直播电视，放进一个像商业 App 一样好用的界面里——
-        免登录即可使用，不充值、不收集你的数据。
-      </p>
-      <div class="cta">
-        <a class="btn primary" href="https://github.com/65tiankehan/tengriqaghan-releases/releases/latest" target="_blank" rel="noreferrer">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          免费下载 Windows 版
-        </a>
-        <a class="btn ghost" href="#how">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          它怎么用？
-        </a>
-      </div>
-      <div class="meta">Windows 10 / 11 · <strong>免费</strong>，无广告、无内购 · 个人非商业使用</div>
-
-      <div class="promises">
-        <div class="promise">
-          <div class="pk">🚫</div>
-          <h4>不带任何影片</h4>
-          <p>不内置影视和频道，播什么由你接的源决定。</p>
-        </div>
-        <div class="promise">
-          <div class="pk">🔕</div>
-          <h4>免登录，也可云同步</h4>
-          <p>不登录也能完整使用；想用 GitHub 账号在多设备间同步收藏、历史和进度，登录即可。</p>
-        </div>
-        <div class="promise">
-          <div class="pk">🔒</div>
-          <h4>数据只在你电脑</h4>
-          <p>账号密码加密存在本机，不上传任何服务器。</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 应用截图 -->
-    <section class="showcase">
-      <div class="shot-wrap">
-        <img class="shot-main" id="shotMain" src="screenshots/home.jpg" alt="腾格里汗主界面" loading="lazy" />
-      </div>
-      <div class="shot-caption">
-        <span id="shotCap">首页 · 继续观看与本周热门</span>
-      </div>
-      <div class="thumb-row" id="thumbRow">
-        <div class="thumb active" data-src="screenshots/home.jpg" data-cap="首页 · 继续观看与本周热门">
-          <img src="screenshots/home.jpg" alt="首页" loading="lazy" />
-          <div class="thumb-label">首页</div>
-        </div>
-        <div class="thumb" data-src="screenshots/movies.jpg" data-cap="电影库 · 类型、年份与地区筛选">
-          <img src="screenshots/movies.jpg" alt="电影库" loading="lazy" />
-          <div class="thumb-label">电影库</div>
-        </div>
-        <div class="thumb" data-src="screenshots/detail.jpg" data-cap="详情页 · 剧情、演员与一键播放">
-          <img src="screenshots/detail.jpg" alt="详情页" loading="lazy" />
-          <div class="thumb-label">详情页</div>
-        </div>
-        <div class="thumb" data-src="screenshots/variety.jpg" data-cap="综艺库 · 海报墙">
-          <img src="screenshots/variety.jpg" alt="综艺库" loading="lazy" />
-          <div class="thumb-label">综艺库</div>
-        </div>
-        <div class="thumb" data-src="screenshots/settings.jpg" data-cap="设置 · 主题、启动与下载选项">
-          <img src="screenshots/settings.jpg" alt="设置" loading="lazy" />
-          <div class="thumb-label">设置</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 三步上手 -->
-    <section id="how">
-      <div class="section-title">三步上手</div>
-      <h2 class="section-h2">第一次用，照做就行</h2>
-      <p class="section-sub">
-        它就像一台新电视，需要先接上「信号」才有画面。下面用一个完全免费、公开合法的直播源做演示，
-        30 秒就能看到第一个画面。
-      </p>
-      <div class="steps">
-        <div class="step">
-          <div class="num">1</div>
-          <h3>下载并安装</h3>
-          <p>从本页下载 Windows 安装包，双击安装。如果系统弹出蓝色保护提示，点「更多信息 → 仍要运行」即可（原因见下方安全说明）。</p>
-        </div>
-        <div class="step">
-          <div class="num">2</div>
-          <h3>添加一个片源</h3>
-          <p>打开应用 →「设置 → 片源」→ 点「添加 iptv-org 直播」，地址已自动填好，直接保存。</p>
-          <span class="tag">https://iptv-org.github.io/iptv/index.m3u</span>
-        </div>
-        <div class="step">
-          <div class="num">3</div>
-          <h3>回首页观看</h3>
-          <p>回到首页，几秒后出现「直播」分区，点频道即可观看。还能看到节目时间表和「正在播出」。</p>
-        </div>
-      </div>
-      <p class="src-note">
-        想看你自己的网盘、家庭媒体库或 IPTV 账号？看
-        <a href="https://github.com/65tiankehan/tengriqaghan-Opendata/wiki" target="_blank" rel="noreferrer">📖 新手指南</a>
-        里的手把手教程。
-      </p>
-    </section>
-
-    <!-- 功能 -->
-    <section class="features" id="features">
-      <div class="section-title">核心能力</div>
-      <h2 class="section-h2">像商业 App 一样好用，但内容是你的</h2>
-      <div class="grid" style="margin-top:32px;">
-        <div class="feat">
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-          </div>
-          <h3>一个界面看所有</h3>
-          <p>电影、剧集、动漫、直播，全部汇聚到同一个首页，跨片源一次搜索，自动记住看到哪、下次续播。</p>
-        </div>
-        <div class="feat">
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          </div>
-          <h3>直播电视 + 节目单</h3>
-          <p>支持 M3U 和 Xtream 直播源，显示「正在播出」、播放进度和今明两天节目时间表，像用电视一样选台。</p>
-        </div>
-        <div class="feat">
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          </div>
-          <h3>下载到本地看</h3>
-          <p>把视频下到电脑，没网也能看；不小心删了本地文件，会自动回到在线片源、从上次位置续播。</p>
-        </div>
-        <div class="feat">
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3z"/></svg>
-          </div>
-          <h3>字幕和弹幕</h3>
-          <p>支持 SRT / VTT / ASS 外挂字幕，本地字幕自动匹配；内置高性能弹幕，看番看剧更有氛围。</p>
-        </div>
-        <div class="feat">
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-          </div>
-          <h3>自动海报墙</h3>
-          <p>通过免费的 TMDB 资料库自动匹配海报、剧情、评分和演员，网盘里的裸文件名也能变成精美海报墙。</p>
-        </div>
-        <div class="feat">
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
-          </div>
-          <h3>多设备云同步（可选）</h3>
-          <p>用 GitHub 账号登录后，收藏、历史和播放进度自动同步到你的私有 Gist，换电脑也能接着看；不登录则一切只在本机。</p>
-        </div>
-        <div class="feat">
-          <div class="ico">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <h3>私密优先</h3>
-          <p>不强制注册，不分析、不追踪、不上传观看记录。你填入的账号密码用系统级加密保存在本机，你接的源只有你知道。</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 支持片源 -->
-    <section class="sources" id="sources">
-      <div class="section-title">能接什么</div>
-      <h2 class="section-h2">把你已有的内容接进来</h2>
-      <div class="src-row" style="margin-top:24px;">
-        <span class="src-chip"><span class="dot"></span>Jellyfin / Emby / Plex</span>
-        <span class="src-chip"><span class="dot"></span>直播 IPTV (M3U)</span>
-        <span class="src-chip"><span class="dot"></span>Xtream 账号</span>
-        <span class="src-chip"><span class="dot"></span>WebDAV / NAS 网盘</span>
-        <span class="src-chip"><span class="dot"></span>电脑本地视频</span>
-      </div>
-      <p class="src-note">
-        不知道这些是什么？没关系，<a href="https://github.com/65tiankehan/tengriqaghan-Opendata/wiki/选择你的接入方式" target="_blank" rel="noreferrer">点这里按你的情况对号入座</a>。
-      </p>
-    </section>
-
-    <!-- 安全 -->
-    <section id="safety">
-      <div class="section-title">安全与隐私</div>
-      <h2 class="section-h2">它会不会偷我数据、带病毒？</h2>
-      <div class="safety">
-        <p style="color:var(--label-2);font-size:14.5px;line-height:1.8;">
-          常年下软件中过招的人，最该关心这个。我们把话说在前面：
-        </p>
-        <div class="safety-grid">
-          <div class="safe-item">
-            <div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div><h4>不强制注册，不收集数据</h4><p>不登录也能完整使用。只有当你主动用 GitHub 登录开启云同步时，才会读写你自己的私有 Gist 来同步收藏和进度；不读取通讯录、文件，不追踪你看了什么。</p></div>
-          </div>
-          <div class="safe-item">
-            <div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div><h4>密码加密保存</h4><p>你填入的网盘/媒体库账号密码，用 Windows 系统加密（DPAPI）存本地，配置文件里不是明文。</p></div>
-          </div>
-          <div class="safe-item">
-            <div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div><h4>没有广告和捆绑</h4><p>安装包不含捆绑软件、不弹广告、不后台偷偷装东西，免费供个人非商业使用。</p></div>
-          </div>
-          <div class="safe-item">
-            <div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            <div><h4>不内置任何片源</h4><p>应用本身不带影视内容，你接什么就看什么，内容来源由你自己选择和负责。</p></div>
-          </div>
-        </div>
-
-        <div class="smartscreen">
-          <h4>⚠️ 安装时 Windows 弹「已保护你的电脑」怎么办？</h4>
-          <p>
-            这是因为作为免费的个人项目，我们暂时<strong>没有购买昂贵的代码签名证书</strong>，
-            Windows 对不认识的新软件会保守提醒，<strong>这不代表它有病毒</strong>。
-            在蓝色窗口里点击 <strong>「更多信息」</strong>，就会出现 <strong>「仍要运行」</strong> 按钮，点击即可继续安装。
-            请始终从<strong>本页的官方下载链接</strong>获取安装包，不要从第三方网站下载，以免被人二次打包植入恶意程序。
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section id="faq">
-      <div class="section-title">常见问题</div>
-      <h2 class="section-h2">你可能还想问</h2>
-      <div class="faq" style="margin-top:32px;">
-        <details class="qa">
-          <summary>为什么我打开后是空白的，没有任何电影？</summary>
-          <p>这是<strong>正常的</strong>。腾格里汗不自带内容，需要你先接入一个片源。最省事的方式是在「设置 → 片源」里添加公开的 iptv-org 直播源，立刻就能看电视。完整教程看 <a href="https://github.com/65tiankehan/tengriqaghan-Opendata/wiki" target="_blank" rel="noreferrer">新手指南</a>。</p>
-        </details>
-        <details class="qa">
-          <summary>它能看爱奇艺、腾讯视频、B 站吗？</summary>
-          <p>不能。它不破解、不抓取任何商业视频网站。它播放的是<strong>你自己拥有或有权访问</strong>的内容：电脑里的视频、你的网盘、你自建的 Jellyfin/Plex、你订阅的 IPTV 等。</p>
-        </details>
-        <details class="qa">
-          <summary>收费吗？有广告或会员吗？</summary>
-          <p>完全免费，供个人非商业使用，没有内购、没有广告、没有会员。</p>
-        </details>
-        <details class="qa">
-          <summary>支持 Mac 和手机吗？</summary>
-          <p>目前提供 Windows 10 / 11 版本。macOS 和 Linux 版本在计划中；手机/平板端暂无计划。</p>
-        </details>
-        <details class="qa">
-          <summary>应用是开源的吗？</summary>
-          <p>这是一个免费但<strong>闭源</strong>的个人非商业项目，源码暂不公开。你的安全来自数据本地化和不收集隐私，而不是开源审计。更多说明见 <a href="https://github.com/65tiankehan/tengriqaghan-Opendata/wiki/安全与隐私" target="_blank" rel="noreferrer">安全与隐私</a>。</p>
-        </details>
-        <details class="qa">
-          <summary>看不了、播放不出来怎么办？</summary>
-          <p>去「设置 → 片源」看每个源旁边的健康圆点：绿色正常、红色表示该源当前连不上（通常是源本身或网络问题，不是应用故障）。更多排障见 <a href="https://github.com/65tiankehan/tengriqaghan-Opendata/wiki/常见问题" target="_blank" rel="noreferrer">常见问题</a>。</p>
-        </details>
-      </div>
-    </section>
-
-    <!-- 下载 -->
-    <section class="download">
-      <div class="dl-card">
-        <h2>准备好开始了吗？</h2>
-        <p>免费下载，Windows 10 / 11 已就绪。遇到安装提示请看上方的安全说明。</p>
-        <a class="btn primary" href="https://github.com/65tiankehan/tengriqaghan-releases/releases/latest" target="_blank" rel="noreferrer" style="margin-bottom:20px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          免费下载最新 Windows 版
-        </a>
-        <div class="dl-platforms">
-          <span class="platform win">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5L10 4.5v7H3v-6zM11 4.4l10-1.4v8.5h-10V4.4zM3 12.5h7v7L3 18.5v-6zm8 0h10v8.5l-10-1.4v-7.1z"/></svg>
-            Windows · 已发布
-          </span>
-          <span class="platform soon">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
-            macOS · 计划中
-          </span>
-          <span class="platform soon">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.504 0c-.155 0-.315.008-.48.021v8.023h.008c.009 0 .011-.008.012-.01l.021-4.172a.315.315 0 0 1 .629 0l.016 3.315a6.599 6.599 0 1 1-.186-7.154z"/></svg>
-            Linux · 计划中
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-      <div class="row">
-        <a href="https://github.com/65tiankehan/tengriqaghan-releases/releases" target="_blank" rel="noreferrer">下载</a> ·
-        <a href="https://github.com/65tiankehan/tengriqaghan-Opendata/wiki" target="_blank" rel="noreferrer">使用指南</a> ·
-        <a href="https://github.com/65tiankehan/tengriqaghan-Opendata" target="_blank" rel="noreferrer">数据与公告</a> ·
-        <a href="https://github.com/65tiankehan" target="_blank" rel="noreferrer">作者 65tiankehan</a>
-      </div>
-      <div>© <span id="y"></span> 65tiankehan · Tengri Desk · 个人非商业使用 · 不内置任何影视内容</div>
-    </footer>
+<nav class="top" id="nav">
+  <div class="nav-in">
+    <a class="brand" href="#top"><span class="mk"><img src="assets/icon.svg" alt="Tengri Desk" /></span> TENGRI DESK</a>
+    <div class="top-links">
+      <a href="#product">预览</a>
+      <a href="#features">能力</a>
+      <a href="#sources">片源</a>
+      <a href="#download" class="gh">下载 ↗</a>
+    </div>
   </div>
+</nav>
 
-  <script>
-    document.getElementById('y').textContent = new Date().getFullYear();
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-img"></div>
+  <div class="hero-veil"></div>
+  <div class="grain"></div>
+  <div class="hero-inner">
+    <div class="hero-meta">
+      <div class="l"><span class="rec"></span><span class="mono">WINDOWS 已就绪 · 免费下载</span></div>
+      <div class="r mono">私人流媒体 · 不追踪 · 数据归你</div>
+    </div>
+    <h1 class="hero-h">
+      <span class="row"><span>你的所有片源，</span></span>
+      <span class="row"><span>一个桌面</span><span class="ac">管好。</span></span>
+    </h1>
+    <div class="hero-foot">
+      <p>腾格里汗是一款私人影视播放器，不是视频网站。把 Jellyfin · Plex · Emby · IPTV · WebDAV · 本地文件聚合到同一个跨源搜索、海报墙、连续播放的桌面影院。免登录即可使用，也可用 GitHub 账号在多设备间同步收藏与进度。</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://github.com/65tiankehan/tengriqaghan-releases/releases/latest" target="_blank" rel="noreferrer">下载 Windows 版 ↓</a>
+        <a class="btn btn-ghost" href="#product">先看一眼 App</a>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint mono">Scroll</div>
+</header>
 
-    // 截图切换
-    (function () {
-      var main = document.getElementById('shotMain');
-      var cap = document.getElementById('shotCap');
-      var row = document.getElementById('thumbRow');
-      var thumbs = row.querySelectorAll('.thumb');
-      thumbs.forEach(function (t) {
-        t.addEventListener('click', function () {
-          thumbs.forEach(function (x) { x.classList.remove('active'); });
-          t.classList.add('active');
-          main.classList.add('fade');
-          var src = t.getAttribute('data-src');
-          var text = t.getAttribute('data-cap');
-          setTimeout(function () {
-            main.src = src;
-            cap.textContent = text;
-            main.classList.remove('fade');
-          }, 150);
-        });
-      });
-    })();
-  </script>
+<!-- 产品展示：3D 漂浮 App 窗口 + 两侧浮卡 -->
+<section class="product" id="product">
+  <div class="product-head rv">
+    <div class="idx mono">00 — 产品预览</div>
+    <h2>一个界面，看你所有的片。</h2>
+    <p>这就是你打开 App 看到的：浮动玻璃工具栏、大横幅、跨源「继续观看」、海报墙，和一条常驻的底部播放条——没有多余的边栏和装饰。</p>
+  </div>
+  <div class="stage rv">
+    <div class="float f1">
+      <div class="fcard">
+        <div class="ft mono">在线源</div>
+        <div class="fv">多类<span class="u">片源接入</span></div>
+        <div class="fd"><span class="g">●</span> 跨源搜索 · 一处续播</div>
+      </div>
+    </div>
+    <div class="float f2">
+      <div class="fcard">
+        <div class="ft mono">同步状态</div>
+        <div class="srclist">
+          <div class="si"><span class="d ok"></span> Jellyfin / Plex 媒体库</div>
+          <div class="si"><span class="d ok"></span> WebDAV / NAS 网盘</div>
+          <div class="si"><span class="d"></span> IPTV · Xtream 直播</div>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="threeCanvas" aria-hidden="true"></canvas>
+
+    <div class="win-content" id="winContent">
+      <!-- 顶部浮动胶囊 Toolbar -->
+      <div class="toolbar">
+        <div class="tb-brand">
+          <span class="dot"></span>
+          <span class="t1">tengri</span>
+          <span class="sep"></span>
+          <span class="t2">Desk</span>
+        </div>
+        <div class="pills">
+          <span class="pill on">首页</span>
+          <span class="pill">电影</span>
+          <span class="pill">剧集</span>
+          <span class="pill">综艺</span>
+          <span class="pill">动漫</span>
+          <span class="pill">收藏</span>
+        </div>
+        <div class="tb-search"><span>⌕</span> 搜索影片、演员、分类… <span class="kbd">⌘K</span></div>
+        <div class="tb-ico">↓</div>
+        <div class="tb-ico">🔔</div>
+        <div class="tb-ava">T</div>
+        <div class="tb-tl"><b>—</b><b>▢</b><b>×</b></div>
+      </div>
+
+      <!-- 内容区 -->
+      <div class="screen">
+        <!-- Hero 横幅 -->
+        <div class="app-hero">
+          <div class="app-hero__bg"></div>
+          <div class="app-hero__veil"></div>
+          <div class="app-hero__c">
+            <div class="kick">Now Featured · 本季主推</div>
+            <h3>沙丘：第二部</h3>
+            <div class="meta"><span class="star">★ 8.3</span><span>·</span><span>2024</span><span>·</span><span>科幻 · 冒险</span><span class="q">4K</span><span class="q">HDR</span></div>
+            <p class="desc">保罗·厄崔迪与契妮和弗瑞曼人一起，踏上对毁灭他家族的仇人的复仇之路，同时他必须在一生挚爱和已知宇宙命运之间做出抉择。</p>
+            <div class="acts">
+              <span class="hbtn play">▶ 继续观看</span>
+              <span class="hbtn fav"><span class="h">♥</span> 已收藏</span>
+            </div>
+          </div>
+          <div class="app-hero__prog">
+            <div class="cl">CONTINUE</div>
+            <div class="tm">18:37 / 2:46:02</div>
+            <div class="bar"><i></i></div>
+          </div>
+        </div>
+
+        <!-- 继续观看 -->
+        <div class="sec-h"><span class="t">继续观看</span><span class="s">Continue</span><span class="more">全部 →</span></div>
+        <div class="cont-grid">
+          <div class="cont">
+            <div class="th" style="background:radial-gradient(120% 90% at 70% 30%,rgba(255,200,120,.6),transparent 55%),linear-gradient(140deg,#3a2412,#1a3a5a)"></div>
+            <div class="body"><div class="tt">沙丘 2</div><div class="mm">S01 · 剩 42 分钟</div><div class="pb"><i style="width:62%"></i></div></div>
+          </div>
+          <div class="cont">
+            <div class="th" style="background:radial-gradient(100% 100% at 50% 40%,rgba(150,120,255,.5),transparent 60%),linear-gradient(160deg,#1a1030,#0a1830)"></div>
+            <div class="body"><div class="tt">三体</div><div class="mm">S1E08 · 45%</div><div class="pb"><i style="width:45%"></i></div></div>
+          </div>
+          <div class="cont">
+            <div class="th" style="background:radial-gradient(120% 120% at 50% 30%,rgba(255,200,140,.7),transparent 55%),linear-gradient(135deg,#2a1408,#5a2a10 60%,#1a0a0a)"></div>
+            <div class="body"><div class="tt">奥本海默</div><div class="mm">剩 1:08:20</div><div class="pb"><i style="width:58%"></i></div></div>
+          </div>
+          <div class="cont">
+            <div class="th" style="background:radial-gradient(100% 80% at 50% 30%,rgba(255,150,90,.5),rgba(220,60,90,.25) 50%,transparent 70%),linear-gradient(150deg,#1a0e14,#2a1018)"></div>
+            <div class="body"><div class="tt">花样年华</div><div class="mm">4K 修复 · 72%</div><div class="pb"><i style="width:72%"></i></div></div>
+          </div>
+        </div>
+
+        <!-- 海报行 -->
+        <div class="sec-h"><span class="t">本周热门</span><span class="s">Trending</span><span class="more">全部 →</span></div>
+        <div class="poster-grid">
+          <div class="poster"><span class="badge hot">HOT</span><div class="th" style="background:radial-gradient(120% 120% at 30% 20%,rgba(0,220,255,.55),transparent 50%),radial-gradient(120% 120% at 80% 90%,rgba(255,40,180,.5),transparent 55%),linear-gradient(160deg,#0a0820,#1a0a2a)"></div><div class="grad"></div><div class="cap"><div class="pt">银翼杀手 2049</div><div class="pm">★ 8.0 · 2017</div></div></div>
+          <div class="poster"><span class="badge new">NEW</span><div class="th" style="background:radial-gradient(120% 120% at 30% 30%,rgba(255,180,60,.7),transparent 55%),radial-gradient(120% 120% at 70% 75%,rgba(90,200,255,.6),transparent 55%),linear-gradient(160deg,#3a2010,#103040)"></div><div class="grad"></div><div class="cap"><div class="pt">头脑特工队 2</div><div class="pm">★ 7.8 · 2024</div></div></div>
+          <div class="poster"><div class="th" style="background:linear-gradient(160deg,#14181c 0%,#2a2018 55%,#0a0c10 100%)"></div><div class="grad"></div><div class="cap"><div class="pt">寄生上流</div><div class="pm">★ 8.5 · 2019</div></div></div>
+          <div class="poster"><span class="badge q">4K</span><div class="th" style="background:radial-gradient(120% 120% at 50% 30%,rgba(255,80,60,.5),transparent 50%),linear-gradient(160deg,#1a0808,#3a1010 60%,#080808)"></div><div class="grad"></div><div class="cap"><div class="pt">2001 太空漫游</div><div class="pm">★ 8.9 · 1968</div></div></div>
+          <div class="poster"><div class="th" style="background:radial-gradient(120% 120% at 50% 50%,rgba(140,180,255,.5),transparent 45%),radial-gradient(100% 100% at 70% 80%,rgba(255,200,120,.3),transparent 55%),linear-gradient(160deg,#080c18,#101a38 60%,#050608)"></div><div class="grad"></div><div class="cap"><div class="pt">星际穿越</div><div class="pm">★ 9.4 · 2014</div></div></div>
+          <div class="poster"><span class="badge hot">HOT</span><div class="th" style="background:radial-gradient(120% 120% at 40% 30%,rgba(255,80,60,.4),transparent 50%),linear-gradient(160deg,#120808,#2a1014 60%,#080608)"></div><div class="grad"></div><div class="cap"><div class="pt">周处除三害</div><div class="pm">★ 8.2 · 2023</div></div></div>
+        </div>
+      </div>
+
+      <!-- 底部浮动 Nowbar -->
+      <div class="nowbar">
+        <div class="nb-progress">
+          <span class="t">0:00</span>
+          <div class="nb-track"><i></i></div>
+          <span class="t">2:46:02</span>
+        </div>
+        <div class="nb-main">
+          <div class="nb-cover" style="background:radial-gradient(120% 90% at 70% 30%,rgba(255,200,120,.6),transparent 55%),linear-gradient(140deg,#3a2412,#1a3a5a)"></div>
+          <div class="nb-info"><div class="nt">沙丘 2 · 第 1 章</div><div class="ns">未在播放</div></div>
+          <div class="nb-ctrl">
+            <span class="b">♥</span><span class="b">＋</span><span class="b">⏮</span>
+            <span class="b play">▶</span>
+            <span class="b">⏭</span><span class="b">≡</span>
+          </div>
+          <div class="nb-right">
+            <span class="b">CC</span>
+            <div class="nb-vol"><i></i></div>
+            <span class="b">⛶</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 能力：C 的索引表 -->
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div><div class="idx mono">01 — 能力</div><h2>它做四件事，做到位。</h2></div>
+      <div class="meta-r mono">FOUR CORE FEATURES</div>
+    </div>
+    <table class="feat rv">
+      <tr>
+        <td class="col-idx mono">01</td>
+        <td class="col-t">聚合所有片源</td>
+        <td class="col-d">电脑、硬盘、NAS、直播账号汇聚同一首页，跨源搜索与继续观看，不再在 App 之间来回切换。</td>
+        <td class="col-go">→</td>
+      </tr>
+      <tr>
+        <td class="col-idx mono">02</td>
+        <td class="col-t">为长片而生的播放</td>
+        <td class="col-d">基于 hls.js 的直播/点播内核，倍速、音轨、外挂 SRT/VTT/ASS、Canvas 弹幕、画中画与全屏沉浸，进度自动续播。</td>
+        <td class="col-go">→</td>
+      </tr>
+      <tr>
+        <td class="col-idx mono">03</td>
+        <td class="col-t">TMDB 海报墙</td>
+        <td class="col-d">自动匹配海报、评分、演员、简介与背景，WebDAV 里一堆无标题裸文件也能变成影院级海报墙。</td>
+        <td class="col-go">→</td>
+      </tr>
+      <tr>
+        <td class="col-idx mono">04</td>
+        <td class="col-t">私密优先，云同步可选</td>
+        <td class="col-d">不登录也能完整使用，不分析、不追踪、不上传播放记录。需要在多设备间接着看时，可用 GitHub 账号把收藏、历史和进度同步到你自己的私有 Gist；填入的账号经 Electron safeStorage 本地加密。</td>
+        <td class="col-go">→</td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<!-- 氛围图带：A -->
+<div class="band rv" id="band">
+  <div class="band-img"></div>
+  <div class="band-veil"></div>
+  <div class="content">
+    <div class="mono">一个具体承诺</div>
+    <div class="q">不是视频网站，<br>是你自己的<span class="ac">放映厅。</span></div>
+    <p class="qs">把散落各处的账号、硬盘和直播源，放进一个像商业 App 一样好用、但内容完全归你的桌面应用。</p>
+  </div>
+</div>
+
+<!-- 片源：C -->
+<section id="sources">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div><div class="idx mono">02 — 片源</div><h2>接你已经有的。</h2></div>
+      <div class="meta-r mono">SUPPORTED SOURCES</div>
+    </div>
+    <div class="src-grid rv">
+      <div class="cell"><div class="tag mono">SERVER <span class="d"></span></div><div class="nm">Jellyfin</div><div class="ds">开源媒体服务器直接登录。</div></div>
+      <div class="cell"><div class="tag mono">SERVER <span class="d"></span></div><div class="nm">Plex / Emby</div><div class="ds">连接你已有的媒体库。</div></div>
+      <div class="cell"><div class="tag mono">LIVE <span class="d"></span></div><div class="nm">IPTV · Xtream</div><div class="ds">M3U 直播源与节目单。</div></div>
+      <div class="cell"><div class="tag mono">STORAGE <span class="d"></span></div><div class="nm">WebDAV / NAS</div><div class="ds">网盘与家庭存储裸文件。</div></div>
+      <div class="cell"><div class="tag mono">LOCAL <span class="d"></span></div><div class="nm">本地文件</div><div class="ds">直接打开，自动刮削。</div></div>
+      <div class="cell"><div class="tag mono">CUSTOM <span class="d"></span></div><div class="nm">JSON 源</div><div class="ds">自定义接口接入。</div></div>
+      <div class="cell"><div class="tag mono">CUSTOM <span class="d"></span></div><div class="nm">M3U 列表</div><div class="ds">订阅任何播放列表。</div></div>
+      <div class="cell"><div class="tag mono">META <span class="d"></span></div><div class="nm">TMDB</div><div class="ds">海报与元数据自动匹配。</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- final CTA -->
+<section id="download" class="final">
+  <div class="final-bg"></div>
+  <div class="final-veil"></div>
+  <div class="wrap rv">
+    <div class="k mono">准备开始</div>
+    <h2>开灯，<br>放电影。</h2>
+    <a class="btn btn-primary" href="https://github.com/65tiankehan/tengriqaghan-releases/releases/latest" target="_blank" rel="noreferrer">下载 Windows 版 ↓</a>
+    <div class="plat">
+      <span><b>Windows</b> · 已发布</span>
+      <span>macOS · 计划中</span>
+      <span>Linux · 计划中</span>
+    </div>
+    <div class="smart">
+      <b>⚠ 安装时弹「已保护你的电脑」？</b>
+      作为免费个人项目，我们暂未购买代码签名证书，Windows 会保守提醒，<b>这不代表有病毒</b>。
+      在蓝色窗口点「更多信息 → 仍要运行」即可。请始终从
+      <a href="https://github.com/65tiankehan/tengriqaghan-releases/releases/latest" target="_blank" rel="noreferrer">官方 Release</a>
+      获取安装包。
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer>
+    <span class="mono">© <span id="y"></span> 65tiankehan · TENGRI DESK · 个人非商业使用</span>
+    <div class="fl">
+      <a href="https://github.com/65tiankehan/tengriqaghan-releases/releases/latest" target="_blank" rel="noreferrer">下载</a>
+      <a href="https://github.com/65tiankehan/tengriqaghan-Opendata/wiki" target="_blank" rel="noreferrer">使用指南</a>
+      <a href="https://github.com/65tiankehan/tengriqaghan-Opendata" target="_blank" rel="noreferrer">数据与公告</a>
+      <a href="https://github.com/65tiankehan" target="_blank" rel="noreferrer">作者 65tiankehan</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var y=document.getElementById('y'); if(y) y.textContent=new Date().getFullYear();
+  var nav=document.getElementById('nav');
+  var onScroll=function(){ if(window.scrollY>40)nav.classList.add('solid');else nav.classList.remove('solid'); };
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+  if(!("IntersectionObserver" in window)){document.querySelectorAll('.rv,.band').forEach(function(e){e.classList.add('in')});return;}
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches){document.querySelectorAll('.rv,.band').forEach(function(e){e.classList.add('in')});return;}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.15});
+  document.querySelectorAll('.rv,.band').forEach(function(e){io.observe(e)});
+})();
+</script>
+
+<!-- ===== Three.js 玻璃外壳 + HTML 内容对齐 ===== -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+(function(){
+  const stage = document.getElementById('product');
+  const canvas = document.getElementById('threeCanvas');
+  const content = document.getElementById('winContent');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function fallback(reason){
+    stage.classList.add('fallback');
+    canvas.style.display='none';
+    content.style.opacity='1';
+    console.log('[three-window] fallback:', reason);
+  }
+  // 窄屏：3D 透视会把面板投到视口外，直接降级为静态透视卡
+  if (window.innerWidth < 900) { fallback('small screen'); return; }
+  let gl;
+  try { gl = canvas.getContext('webgl2') || canvas.getContext('webgl'); } catch(e){}
+  if(!gl){ fallback('no webgl'); return; }
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, powerPreference:'high-performance' });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 1.75));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.15;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+  camera.position.set(0, 0.2, 11);
+  camera.lookAt(0, 0, 0);
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  const key = new THREE.DirectionalLight(0xffffff, 2.4);
+  key.position.set(3.5, 5, 5);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1024,1024);
+  key.shadow.camera.near = 1; key.shadow.camera.far = 20;
+  key.shadow.camera.left=-6; key.shadow.camera.right=6; key.shadow.camera.top=6; key.shadow.camera.bottom=-6;
+  key.shadow.bias = -0.0002;
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0x6fb4ff, 1.4);
+  rim.position.set(-4, 2, -3);
+  scene.add(rim);
+  const fill = new THREE.HemisphereLight(0x88b8ff, 0x050608, 0.6);
+  scene.add(fill);
+
+  // 玻璃窗口外壳：圆角薄板，正面嵌入黑色面板承载 HTML
+  const W = 6.4, H = 6.4 * (926/960), D = 0.22;
+  const frameGeo = new RoundedBoxGeometry(W, H, D, 12, 0.16);
+  const frameMat = new THREE.MeshPhysicalMaterial({
+    color: 0x0a0c10, metalness: 0.55, roughness: 0.28,
+    clearcoat: 1.0, clearcoatRoughness: 0.18, envMapIntensity: 1.15,
+  });
+  const frame = new THREE.Mesh(frameGeo, frameMat);
+  frame.castShadow = true; frame.receiveShadow = true;
+  scene.add(frame);
+
+  const faceMat = new THREE.MeshStandardMaterial({ color:0x000000, roughness:0.6, metalness:0.0 });
+  const face = new THREE.Mesh(new THREE.PlaneGeometry(W-0.12, H-0.12), faceMat);
+  face.position.z = D/2 + 0.001;
+  frame.add(face);
+
+  const edgeMat = new THREE.MeshStandardMaterial({ color:0xffffff, emissive:0x223a55, emissiveIntensity:0.6, metalness:0.9, roughness:0.2 });
+  const edge = new THREE.Mesh(new THREE.BoxGeometry(W-0.3, 0.012, 0.02), edgeMat);
+  edge.position.set(0, H/2 - 0.08, D/2 + 0.02);
+  frame.add(edge);
+
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(30, 30),
+    new THREE.ShadowMaterial({ opacity: 0.5 })
+  );
+  ground.rotation.x = -Math.PI/2;
+  ground.position.y = -H/2 - 0.45;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // 鼠标视差
+  const target = { rx:0.05, ry:0 };
+  stage.addEventListener('pointermove', (e)=>{
+    const r = stage.getBoundingClientRect();
+    const nx = ((e.clientX - r.left)/r.width)*2 - 1;
+    const ny = ((e.clientY - r.top)/r.height)*2 - 1;
+    target.ry = nx * 0.16;
+    target.rx = 0.05 - ny*0.10;
+  });
+  stage.addEventListener('pointerleave', ()=>{ target.ry=0; target.rx=0.05; });
+
+  // HTML 内容层与 3D 面板对齐
+  const tmp = new THREE.Vector3();
+  const faceW = W-0.12, faceH = H-0.12;
+  const corners = [
+    new THREE.Vector3(-faceW/2,  faceH/2, D/2+0.01),
+    new THREE.Vector3( faceW/2,  faceH/2, D/2+0.01),
+    new THREE.Vector3( faceW/2, -faceH/2, D/2+0.01),
+    new THREE.Vector3(-faceW/2, -faceH/2, D/2+0.01),
+  ];
+
+  function homography(dst){
+    const x0=dst[0],y0=dst[1], x1=dst[2],y1=dst[3], x2=dst[4],y2=dst[5], x3=dst[6],y3=dst[7];
+    const A=x2-x1, B=x2-x3, C=x1+x3-x0-x2;
+    const D=y2-y1, E=y2-y3, F=y1+y3-y0-y2;
+    const det=A*E-B*D;
+    const p=(C*E-B*F)/det;
+    const q=(A*F-C*D)/det;
+    const h00=x1*(p+1)-x0, h01=x3*(q+1)-x0, h02=x0;
+    const h10=y1*(p+1)-y0, h11=y3*(q+1)-y0, h12=y0;
+    return [h00,h10,0,p, h01,h11,0,q, 0,0,1,0, h02,h12,0,1].map(n=>+n.toFixed(5)).join(',');
+  }
+
+  let visible = false;
+  let lastT = performance.now();
+  function resize(){
+    const w = stage.clientWidth, h = stage.clientHeight;
+    if(w===0||h===0) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  const ro = new ResizeObserver(resize);
+  ro.observe(stage);
+
+  function projectCorners(){
+    const r = canvas.getBoundingClientRect();
+    return corners.map(c=>{
+      tmp.copy(c).applyMatrix4(frame.matrixWorld).project(camera);
+      return [ (tmp.x*0.5+0.5)*r.width, (-tmp.y*0.5+0.5)*r.height ];
+    }).flat();
+  }
+
+  function syncContent(){
+    const cw = content.offsetWidth, ch = content.offsetHeight;
+    if(cw===0||ch===0) return;
+    frame.updateMatrixWorld(true);
+    content.style.transformOrigin = '0 0';
+    const m = homography(projectCorners());
+    content.style.transform = `matrix3d(${m}) scale(${1/cw},${1/ch})`;
+  }
+
+  function frameLoop(now){
+    requestAnimationFrame(frameLoop);
+    const dt = Math.min((now-lastT)/1000, 0.05); lastT=now;
+    if(visible){
+      frame.rotation.y += (target.ry - frame.rotation.y)*Math.min(1, dt*6);
+      frame.rotation.x += (target.rx - frame.rotation.x)*Math.min(1, dt*6);
+      const float = reduceMotion ? 0 : Math.sin(now*0.0008)*0.06;
+      frame.position.y = float;
+      frame.updateMatrixWorld(true);
+      renderer.render(scene, camera);
+      syncContent();
+    }
+  }
+
+  const io = new IntersectionObserver((es)=>{
+    es.forEach(e=>{ visible = e.isIntersecting; });
+  }, { threshold: 0.02 });
+  io.observe(stage);
+
+  if(reduceMotion){
+    frame.rotation.x = 0.05;
+    frame.updateMatrixWorld(true);
+    renderer.render(scene,camera);
+    syncContent();
+    content.classList.add('shown');
+    return;
+  }
+
+  visible = true;
+  frame.updateMatrixWorld(true);
+  renderer.render(scene,camera);
+  syncContent();
+  requestAnimationFrame(()=>content.classList.add('shown'));
+  requestAnimationFrame(frameLoop);
+})();
+</script>
 </body>
 </html>
